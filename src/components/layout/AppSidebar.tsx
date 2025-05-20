@@ -43,7 +43,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-6">
+      <div className="flex-1 overflow-y-auto py-6 bg-white">
         <nav className="space-y-2 px-2">
           {navItems.map((item, index) => (
             <Link
