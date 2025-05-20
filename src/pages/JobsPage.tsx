@@ -106,11 +106,11 @@ const JobsPage = () => {
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
-                <SelectItem value="San Francisco">San Francisco</SelectItem>
-                <SelectItem value="New York">New York</SelectItem>
-                <SelectItem value="Chicago">Chicago</SelectItem>
-                <SelectItem value="Remote">Remote</SelectItem>
+                <SelectItem value="all-locations">All Locations</SelectItem>
+                <SelectItem value="san-francisco">San Francisco</SelectItem>
+                <SelectItem value="new-york">New York</SelectItem>
+                <SelectItem value="chicago">Chicago</SelectItem>
+                <SelectItem value="remote">Remote</SelectItem>
               </SelectContent>
             </Select>
           </div>
