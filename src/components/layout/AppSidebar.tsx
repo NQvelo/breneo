@@ -35,9 +35,7 @@ export function AppSidebar({
           objectPosition: 'left'
         }} />}
         </div>
-        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="text-white hover:bg-white/10">
-          <Menu size={20} />
-        </Button>
+        
       </div>
 
       <div className="flex-1 overflow-y-auto py-6 bg-white">
