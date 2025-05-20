@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -24,6 +25,16 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				breneo: {
+					blue: '#19B5FE',
+					navy: '#303B5A',
+					accent: '#6C63FF',
+					lightgray: '#F8F9FA',
+					gray: '#E9ECEF',
+					success: '#20C997',
+					warning: '#FFC107',
+					danger: '#DC3545',
+				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
