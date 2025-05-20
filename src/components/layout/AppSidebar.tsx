@@ -25,7 +25,7 @@ export function AppSidebar({
     href: '/courses'
   }];
   return <div className={cn("h-screen fixed top-0 left-0 z-40 bg-breneo-navy text-white transition-all duration-300 flex flex-col", collapsed ? "w-20" : "w-64")}>
-      <div className="p-4 flex items-center justify-between border-b border-white/10">
+      <div className="p-4 flex items-center justify-between border-b border-white/10 bg-white">
         <div className="flex items-center">
           {!collapsed && <Link to="/" className="flex items-center space-x-2">
               <img src="/lovable-uploads/6bee4aa6-3a7f-4806-98bd-dc73a1955812.png" alt="Breneo Logo" className="h-10" />
