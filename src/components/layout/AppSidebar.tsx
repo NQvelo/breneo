@@ -29,9 +29,9 @@ export function AppSidebar({
       <div className="p-4 flex items-center justify-between border-b border-white/10 bg-white">
         <div className="flex items-center">
           {!collapsed && <Link to="/" className="flex items-center space-x-2">
-              <img src="/lovable-uploads/6bee4aa6-3a7f-4806-98bd-dc73a1955812.png" alt="Breneo Logo" className="h-10" />
+              <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10" />
             </Link>}
-          {collapsed && <img src="/lovable-uploads/6bee4aa6-3a7f-4806-98bd-dc73a1955812.png" alt="Breneo Logo" className="h-10 w-10" style={{
+          {collapsed && <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10 w-10" style={{
           objectFit: 'cover',
           objectPosition: 'left'
         }} />}

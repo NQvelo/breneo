@@ -9,7 +9,7 @@ const InterestsPage = () => {
       <header className="bg-white py-4 px-6 shadow-sm">
         <div className="container mx-auto">
           <a href="/" className="flex items-center space-x-2">
-            <img src="/lovable-uploads/6bee4aa6-3a7f-4806-98bd-dc73a1955812.png" alt="Breneo Logo" className="h-10" />
+            <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10" />
           </a>
         </div>
       </header>

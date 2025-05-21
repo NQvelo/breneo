@@ -10,7 +10,7 @@ const LandingPage = () => {
       <header className="bg-white py-4 px-6 shadow-sm">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <img src="/lovable-uploads/6bee4aa6-3a7f-4806-98bd-dc73a1955812.png" alt="Breneo Logo" className="h-10" />
+            <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10" />
           </div>
           <div className="hidden md:flex items-center space-x-6">
             <a href="#features" className="text-gray-600 hover:text-breneo-navy transition-colors">Features</a>
@@ -256,7 +256,7 @@ const LandingPage = () => {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <img src="/lovable-uploads/6bee4aa6-3a7f-4806-98bd-dc73a1955812.png" alt="Breneo Logo" className="h-10 mb-4" />
+              <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10 mb-4" />
               <p className="text-gray-300 text-sm">
                 Empowering careers through AI-powered skill assessment and personalized learning.
               </p>
