@@ -1,10 +1,38 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  description: string;
+  url: string;
+  created_at: string;
+  company_logo?: string;
+  remote?: boolean;
+}
+
+const fetchJobs = async () => {
+  const baseUrl = 'https://remotive.com/api/remote-jobs';
+  const params = new URLSearchParams();
+  params.append('limit', '5'); // Get only 5 jobs for dashboard
+  
+  const response = await fetch(`${baseUrl}?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch jobs');
+  }
+  
+  const data = await response.json();
+  return data.jobs || [];
+};
 
 const Dashboard = () => {
   // Mock user data
@@ -13,11 +41,20 @@ const Dashboard = () => {
     skillTestTaken: false
   };
 
-  // Mock job recommendations
-  const recommendedJobs = [
-    { id: 1, title: 'UX Designer', company: 'CreativeTech', match: 92 },
-    { id: 2, title: 'Marketing Specialist', company: 'GrowthLabs', match: 87 },
-  ];
+  // Fetch real jobs
+  const { data: jobs = [], isLoading: jobsLoading, error: jobsError } = useQuery({
+    queryKey: ['dashboard-jobs'],
+    queryFn: fetchJobs,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Transform jobs for display
+  const recommendedJobs = jobs.slice(0, 2).map((job: any) => ({
+    id: job.id,
+    title: job.title,
+    company: job.company_name,
+    match: Math.floor(Math.random() * 30) + 70, // Random match percentage for demo
+  }));
 
   // Mock course recommendations
   const recommendedCourses = [
@@ -59,10 +96,27 @@ const Dashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle>Job Matches</CardTitle>
-              <CardDescription>Personalized job recommendations based on your skills</CardDescription>
+              <CardDescription>Live job recommendations from our partners</CardDescription>
             </CardHeader>
             <CardContent>
-              {recommendedJobs.length > 0 ? (
+              {jobsLoading ? (
+                <div className="space-y-4">
+                  {[...Array(2)].map((_, i) => (
+                    <div key={i} className="border rounded-md p-4">
+                      <Skeleton className="h-5 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-3" />
+                      <Skeleton className="h-1.5 w-full" />
+                    </div>
+                  ))}
+                </div>
+              ) : jobsError ? (
+                <div className="text-center py-6">
+                  <p className="text-red-500 mb-4">Failed to load job recommendations</p>
+                  <Button variant="outline" onClick={() => window.location.reload()}>
+                    Retry
+                  </Button>
+                </div>
+              ) : recommendedJobs.length > 0 ? (
                 <div className="space-y-4">
                   {recommendedJobs.map(job => (
                     <div key={job.id} className="border rounded-md p-4">
