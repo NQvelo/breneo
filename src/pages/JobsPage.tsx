@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,74 +8,85 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useQuery } from '@tanstack/react-query';
 
-// Mock jobs data
-const JOBS = [
-  {
-    id: 1,
-    title: 'Product Designer',
-    company: 'TechCorp',
-    location: 'San Francisco, CA',
-    type: 'Full-time',
-    match: 95,
-    remote: true,
-    postedAt: '2 days ago',
-    description: 'We are looking for a talented product designer to join our team and help us create exceptional user experiences.',
-    requirements: ['3+ years of experience', 'UI/UX expertise', 'Figma proficiency'],
-  },
-  {
-    id: 2,
-    title: 'Digital Marketing Specialist',
-    company: 'GrowthLabs',
-    location: 'New York, NY',
-    type: 'Full-time',
-    match: 88,
-    remote: true,
-    postedAt: '1 week ago',
-    description: 'Join our marketing team to develop and execute digital campaigns across multiple platforms.',
-    requirements: ['2+ years in digital marketing', 'Analytics experience', 'Social media expertise'],
-  },
-  {
-    id: 3,
-    title: 'Frontend Developer Intern',
-    company: 'WebWizards',
-    location: 'Remote',
-    type: 'Internship',
-    match: 82,
-    remote: true,
-    postedAt: '3 days ago',
-    description: 'Great opportunity for a promising developer to gain hands-on experience with modern web technologies.',
-    requirements: ['JavaScript knowledge', 'Basic React understanding', 'Eagerness to learn'],
-  },
-  {
-    id: 4,
-    title: 'Content Marketing Strategist',
-    company: 'ContentKings',
-    location: 'Chicago, IL',
-    type: 'Full-time',
-    match: 79,
-    remote: false,
-    postedAt: '1 day ago',
-    description: 'Help us create compelling content strategies that drive engagement and conversions.',
-    requirements: ['Content creation experience', 'SEO knowledge', 'Strategic thinking'],
-  },
-];
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  type: string;
+  description: string;
+  url: string;
+  created_at: string;
+  company_logo?: string;
+  remote?: boolean;
+}
+
+const fetchJobs = async (searchTerm: string = '') => {
+  const baseUrl = 'https://remotive.com/api/remote-jobs';
+  const params = new URLSearchParams();
+  
+  if (searchTerm) {
+    params.append('search', searchTerm);
+  }
+  params.append('limit', '20');
+  
+  const response = await fetch(`${baseUrl}?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch jobs');
+  }
+  
+  const data = await response.json();
+  return data.jobs || [];
+};
 
 const JobsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>('');
   const [remoteOnly, setRemoteOnly] = useState(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
-  // Filter jobs based on search and filters
-  const filteredJobs = JOBS.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         job.company.toLowerCase().includes(searchTerm.toLowerCase());
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const { data: jobs = [], isLoading, error } = useQuery({
+    queryKey: ['jobs', debouncedSearchTerm],
+    queryFn: () => fetchJobs(debouncedSearchTerm),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Transform and filter jobs
+  const transformedJobs = jobs.map((job: any) => ({
+    id: job.id,
+    title: job.title,
+    company: job.company_name,
+    location: job.candidate_required_location || 'Remote',
+    type: job.job_type || 'Full-time',
+    description: job.description?.substring(0, 200) + '...' || 'No description available',
+    url: job.url,
+    remote: true,
+    postedAt: new Date(job.publication_date).toLocaleDateString(),
+    match: Math.floor(Math.random() * 30) + 70, // Random match percentage for demo
+    requirements: ['Remote work', 'Flexible hours', 'Competitive salary'],
+    company_logo: job.company_logo
+  }));
+
+  // Filter jobs based on local filters
+  const filteredJobs = transformedJobs.filter((job: any) => {
     const matchesType = selectedTypes.length === 0 || selectedTypes.includes(job.type);
-    const matchesLocation = !selectedLocation || job.location.includes(selectedLocation);
+    const matchesLocation = !selectedLocation || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
     const matchesRemote = !remoteOnly || job.remote;
     
-    return matchesSearch && matchesType && matchesLocation && matchesRemote;
+    return matchesType && matchesLocation && matchesRemote;
   });
 
   const handleTypeToggle = (type: string) => {
@@ -86,15 +97,22 @@ const JobsPage = () => {
     }
   };
 
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedTypes([]);
+    setSelectedLocation('');
+    setRemoteOnly(false);
+  };
+
   return (
     <DashboardLayout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-breneo-navy mb-6">Job Offers</h1>
+        <h1 className="text-2xl font-bold text-breneo-navy mb-6">Live Job Offers</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="md:col-span-3">
             <Input
-              placeholder="Search jobs by title or company..."
+              placeholder="Search remote jobs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full"
@@ -106,10 +124,10 @@ const JobsPage = () => {
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all-locations">All Locations</SelectItem>
-                <SelectItem value="san-francisco">San Francisco</SelectItem>
-                <SelectItem value="new-york">New York</SelectItem>
-                <SelectItem value="chicago">Chicago</SelectItem>
+                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="usa">USA</SelectItem>
+                <SelectItem value="europe">Europe</SelectItem>
+                <SelectItem value="worldwide">Worldwide</SelectItem>
                 <SelectItem value="remote">Remote</SelectItem>
               </SelectContent>
             </Select>
@@ -123,7 +141,7 @@ const JobsPage = () => {
               <CardContent className="p-5">
                 <h3 className="font-medium mb-3">Job Type</h3>
                 <div className="space-y-2">
-                  {['Full-time', 'Part-time', 'Contract', 'Internship'].map(type => (
+                  {['Full-time', 'Part-time', 'Contract', 'Freelance'].map(type => (
                     <div key={type} className="flex items-center space-x-2">
                       <Checkbox 
                         id={`job-type-${type}`} 
@@ -156,12 +174,7 @@ const JobsPage = () => {
                 <Button 
                   variant="outline" 
                   className="w-full"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedTypes([]);
-                    setSelectedLocation('');
-                    setRemoteOnly(false);
-                  }}
+                  onClick={clearFilters}
                 >
                   Clear Filters
                 </Button>
@@ -171,28 +184,61 @@ const JobsPage = () => {
           
           {/* Job listings */}
           <div className="md:col-span-3">
-            {filteredJobs.length > 0 ? (
+            {isLoading ? (
               <div className="space-y-4">
-                {filteredJobs.map(job => (
+                {[...Array(5)].map((_, i) => (
+                  <Card key={i}>
+                    <CardContent className="p-5">
+                      <Skeleton className="h-6 w-3/4 mb-2" />
+                      <Skeleton className="h-4 w-1/2 mb-4" />
+                      <Skeleton className="h-20 w-full" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : error ? (
+              <div className="text-center py-12 bg-gray-50 rounded-lg border">
+                <p className="text-red-500 mb-4">Failed to load jobs. Please try again.</p>
+                <Button 
+                  variant="outline" 
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </Button>
+              </div>
+            ) : filteredJobs.length > 0 ? (
+              <div className="space-y-4">
+                {filteredJobs.map((job: any) => (
                   <Card key={job.id} className="overflow-hidden">
                     <CardContent className="p-0">
                       <div className="p-5">
                         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                          <div>
-                            <h3 className="font-medium text-lg">{job.title}</h3>
-                            <p className="text-gray-500">{job.company} • {job.location}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
-                                {job.type}
-                              </span>
-                              {job.remote && (
-                                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                                  Remote
-                                </span>
+                          <div className="flex-1">
+                            <div className="flex items-start gap-3">
+                              {job.company_logo && (
+                                <img 
+                                  src={job.company_logo} 
+                                  alt={`${job.company} logo`}
+                                  className="w-12 h-12 rounded-lg object-contain"
+                                />
                               )}
-                              <span className="text-gray-500 text-xs">
-                                Posted {job.postedAt}
-                              </span>
+                              <div className="flex-1">
+                                <h3 className="font-medium text-lg">{job.title}</h3>
+                                <p className="text-gray-500">{job.company} • {job.location}</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                                    {job.type}
+                                  </span>
+                                  {job.remote && (
+                                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                                      Remote
+                                    </span>
+                                  )}
+                                  <span className="text-gray-500 text-xs">
+                                    Posted {job.postedAt}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <div className="text-right md:text-center">
@@ -206,19 +252,22 @@ const JobsPage = () => {
                           <Progress value={job.match} className="h-1.5" />
                         </div>
                         
-                        <p className="mt-4 text-gray-700">{job.description}</p>
+                        <p className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: job.description }} />
                         
                         <div className="mt-3">
-                          <h4 className="text-sm font-medium mb-1">Requirements:</h4>
+                          <h4 className="text-sm font-medium mb-1">Benefits:</h4>
                           <ul className="text-sm text-gray-700 list-disc pl-5">
-                            {job.requirements.map((req, index) => (
+                            {job.requirements.map((req: string, index: number) => (
                               <li key={index}>{req}</li>
                             ))}
                           </ul>
                         </div>
                         
                         <div className="mt-5 flex justify-end">
-                          <Button className="bg-breneo-blue hover:bg-breneo-blue/90">
+                          <Button 
+                            className="bg-breneo-blue hover:bg-breneo-blue/90"
+                            onClick={() => window.open(job.url, '_blank')}
+                          >
                             Apply Now
                           </Button>
                         </div>
@@ -232,12 +281,7 @@ const JobsPage = () => {
                 <p className="text-gray-500 mb-4">No jobs found matching your criteria</p>
                 <Button 
                   variant="outline" 
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedTypes([]);
-                    setSelectedLocation('');
-                    setRemoteOnly(false);
-                  }}
+                  onClick={clearFilters}
                 >
                   Clear Filters
                 </Button>
