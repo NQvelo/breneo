@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
@@ -45,7 +44,7 @@ const fetchJobs = async (searchTerm: string = '') => {
 const JobsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [remoteOnly, setRemoteOnly] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
@@ -83,7 +82,7 @@ const JobsPage = () => {
   // Filter jobs based on local filters
   const filteredJobs = transformedJobs.filter((job: any) => {
     const matchesType = selectedTypes.length === 0 || selectedTypes.includes(job.type);
-    const matchesLocation = !selectedLocation || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
+    const matchesLocation = selectedLocation === 'all' || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
     const matchesRemote = !remoteOnly || job.remote;
     
     return matchesType && matchesLocation && matchesRemote;
@@ -100,7 +99,7 @@ const JobsPage = () => {
   const clearFilters = () => {
     setSearchTerm('');
     setSelectedTypes([]);
-    setSelectedLocation('');
+    setSelectedLocation('all');
     setRemoteOnly(false);
   };
 
@@ -124,7 +123,7 @@ const JobsPage = () => {
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
                 <SelectItem value="usa">USA</SelectItem>
                 <SelectItem value="europe">Europe</SelectItem>
                 <SelectItem value="worldwide">Worldwide</SelectItem>
