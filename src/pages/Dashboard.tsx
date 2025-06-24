@@ -1,11 +1,11 @@
+
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface Job {
   id: string;
@@ -35,14 +35,9 @@ const fetchJobs = async () => {
 };
 
 const Dashboard = () => {
-  const { user } = useAuth();
-  
-  // Get user name from auth context
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
-  
-  // Mock user data - keeping skillTestTaken as mock for now
-  const userState = {
-    name: userName,
+  // Mock user data
+  const user = {
+    name: 'Sarah Johnson',
     skillTestTaken: false
   };
 
@@ -71,7 +66,7 @@ const Dashboard = () => {
     <DashboardLayout>
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-breneo-navy">Welcome, {userState.name}</h1>
+          <h1 className="text-2xl font-bold text-breneo-navy">Welcome, {user.name}</h1>
           <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90 rounded-[24px]">
             <Link to="/notifications">
               Notifications
@@ -79,7 +74,7 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {!userState.skillTestTaken && (
+        {!user.skillTestTaken && (
           <Card className="mb-6 bg-gradient-to-r from-breneo-blue/10 to-breneo-blue/5 border-breneo-blue/20 rounded-[24px]">
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -205,7 +200,7 @@ const Dashboard = () => {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium">Skill Assessment</span>
                   <span className="text-sm text-gray-500">
-                    {userState.skillTestTaken ? 'Completed' : 'Not Started'}
+                    {user.skillTestTaken ? 'Completed' : 'Not Started'}
                   </span>
                 </div>
               </div>
