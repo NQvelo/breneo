@@ -38,10 +38,10 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
 
   return (
     <div className={cn(
-      "h-screen fixed top-0 left-0 z-40 bg-breneo-navy text-white transition-all duration-300 flex flex-col",
+      "h-screen fixed top-4 left-4 bottom-4 z-40 bg-breneo-navy text-white transition-all duration-300 flex flex-col rounded-[20px]",
       collapsed ? "w-20" : "w-64"
     )}>
-      <div className="p-4 flex items-center justify-between border-b border-white/10 bg-white">
+      <div className="p-4 flex items-center justify-between border-b border-white/10 bg-white rounded-t-[20px]">
         <div className="flex items-center">
           {!collapsed && (
             <Link to="/" className="flex items-center space-x-2">
@@ -81,7 +81,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
         </nav>
       </div>
 
-      <div className="p-4 border-t border-white/10 bg-white">
+      <div className="p-4 border-t border-white/10 bg-white rounded-b-[20px]">
         <div className={cn("flex items-center", collapsed ? "justify-center" : "space-x-3")}>
           <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold">
             {user?.email?.charAt(0).toUpperCase() || 'U'}

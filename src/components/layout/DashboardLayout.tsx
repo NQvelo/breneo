@@ -20,7 +20,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       
       <main className={cn(
         "transition-all duration-300 min-h-screen",
-        sidebarCollapsed ? "ml-20" : "ml-64"
+        sidebarCollapsed ? "ml-28" : "ml-72"
       )}>
         {children}
       </main>
