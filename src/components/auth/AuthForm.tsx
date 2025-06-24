@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -45,10 +44,6 @@ export function AuthForm() {
 
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <div className="flex justify-center mb-6">
-        <img alt="Breneo Logo" className="h-12" src="/lovable-uploads/79a5cf6b-150a-40f5-878a-b55b5e279bf4.png" />
-      </div>
-
       <Tabs defaultValue="signin" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="signin">Sign In</TabsTrigger>
