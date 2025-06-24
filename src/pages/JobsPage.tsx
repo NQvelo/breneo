@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';
 
@@ -114,15 +114,15 @@ const JobsPage = () => {
               placeholder="Search remote jobs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full"
+              className="w-full rounded-[24px]"
             />
           </div>
           <div>
             <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-              <SelectTrigger>
+              <SelectTrigger className="rounded-[24px]">
                 <SelectValue placeholder="Location" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-[24px]">
                 <SelectItem value="all">All Locations</SelectItem>
                 <SelectItem value="usa">USA</SelectItem>
                 <SelectItem value="europe">Europe</SelectItem>
@@ -136,7 +136,7 @@ const JobsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Filters sidebar */}
           <div className="space-y-6">
-            <Card>
+            <Card className="rounded-[24px]">
               <CardContent className="p-5">
                 <h3 className="font-medium mb-3">Job Type</h3>
                 <div className="space-y-2">
@@ -172,7 +172,7 @@ const JobsPage = () => {
                 
                 <Button 
                   variant="outline" 
-                  className="w-full"
+                  className="w-full rounded-[24px]"
                   onClick={clearFilters}
                 >
                   Clear Filters
@@ -186,7 +186,7 @@ const JobsPage = () => {
             {isLoading ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
-                  <Card key={i}>
+                  <Card key={i} className="rounded-[24px]">
                     <CardContent className="p-5">
                       <Skeleton className="h-6 w-3/4 mb-2" />
                       <Skeleton className="h-4 w-1/2 mb-4" />
@@ -196,11 +196,12 @@ const JobsPage = () => {
                 ))}
               </div>
             ) : error ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg border">
+              <div className="text-center py-12 bg-gray-50 rounded-[24px] border">
                 <p className="text-red-500 mb-4">Failed to load jobs. Please try again.</p>
                 <Button 
                   variant="outline" 
                   onClick={() => window.location.reload()}
+                  className="rounded-[24px]"
                 >
                   Retry
                 </Button>
@@ -208,7 +209,7 @@ const JobsPage = () => {
             ) : filteredJobs.length > 0 ? (
               <div className="space-y-4">
                 {filteredJobs.map((job: any) => (
-                  <Card key={job.id} className="overflow-hidden">
+                  <Card key={job.id} className="overflow-hidden rounded-[24px]">
                     <CardContent className="p-0">
                       <div className="p-5">
                         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -218,18 +219,18 @@ const JobsPage = () => {
                                 <img 
                                   src={job.company_logo} 
                                   alt={`${job.company} logo`}
-                                  className="w-12 h-12 rounded-lg object-contain"
+                                  className="w-12 h-12 rounded-[24px] object-contain"
                                 />
                               )}
                               <div className="flex-1">
                                 <h3 className="font-medium text-lg">{job.title}</h3>
                                 <p className="text-gray-500">{job.company} • {job.location}</p>
                                 <div className="flex items-center gap-2 mt-1">
-                                  <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                                  <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-[24px]">
                                     {job.type}
                                   </span>
                                   {job.remote && (
-                                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-[24px]">
                                       Remote
                                     </span>
                                   )}
@@ -241,14 +242,10 @@ const JobsPage = () => {
                             </div>
                           </div>
                           <div className="text-right md:text-center">
-                            <div className="bg-breneo-blue/10 text-breneo-blue inline-flex px-3 py-1 rounded-full text-sm font-medium">
+                            <div className="bg-breneo-blue/10 text-breneo-blue inline-flex px-3 py-1 rounded-[24px] text-sm font-medium">
                               {job.match}% Match
                             </div>
                           </div>
-                        </div>
-                        
-                        <div className="mt-3">
-                          <Progress value={job.match} className="h-1.5" />
                         </div>
                         
                         <p className="mt-4 text-gray-700" dangerouslySetInnerHTML={{ __html: job.description }} />
@@ -264,7 +261,7 @@ const JobsPage = () => {
                         
                         <div className="mt-5 flex justify-end">
                           <Button 
-                            className="bg-breneo-blue hover:bg-breneo-blue/90"
+                            className="bg-breneo-blue hover:bg-breneo-blue/90 rounded-[24px]"
                             onClick={() => window.open(job.url, '_blank')}
                           >
                             Apply Now
@@ -276,11 +273,12 @@ const JobsPage = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-gray-50 rounded-lg border">
+              <div className="text-center py-12 bg-gray-50 rounded-[24px] border">
                 <p className="text-gray-500 mb-4">No jobs found matching your criteria</p>
                 <Button 
                   variant="outline" 
                   onClick={clearFilters}
+                  className="rounded-[24px]"
                 >
                   Clear Filters
                 </Button>

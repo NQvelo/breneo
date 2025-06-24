@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -67,7 +67,7 @@ const Dashboard = () => {
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-breneo-navy">Welcome, {user.name}</h1>
-          <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90">
+          <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90 rounded-[24px]">
             <Link to="/notifications">
               Notifications
             </Link>
@@ -75,14 +75,14 @@ const Dashboard = () => {
         </div>
 
         {!user.skillTestTaken && (
-          <Card className="mb-6 bg-gradient-to-r from-breneo-blue/10 to-breneo-blue/5 border-breneo-blue/20">
+          <Card className="mb-6 bg-gradient-to-r from-breneo-blue/10 to-breneo-blue/5 border-breneo-blue/20 rounded-[24px]">
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div className="mb-4 md:mb-0">
                   <h3 className="text-xl font-semibold text-breneo-navy mb-2">Start Your Journey with Breneo</h3>
                   <p className="text-gray-600 max-w-lg">Take your skill test to get personalized job and course recommendations tailored just for you.</p>
                 </div>
-                <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90">
+                <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90 rounded-[24px]">
                   <Link to="/skill-test">
                     Take Skill Test
                   </Link>
@@ -93,7 +93,7 @@ const Dashboard = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <Card>
+          <Card className="rounded-[24px]">
             <CardHeader>
               <CardTitle>Job Matches</CardTitle>
               <CardDescription>Live job recommendations from our partners</CardDescription>
@@ -102,40 +102,36 @@ const Dashboard = () => {
               {jobsLoading ? (
                 <div className="space-y-4">
                   {[...Array(2)].map((_, i) => (
-                    <div key={i} className="border rounded-md p-4">
+                    <div key={i} className="border rounded-[24px] p-4">
                       <Skeleton className="h-5 w-3/4 mb-2" />
                       <Skeleton className="h-4 w-1/2 mb-3" />
-                      <Skeleton className="h-1.5 w-full" />
                     </div>
                   ))}
                 </div>
               ) : jobsError ? (
                 <div className="text-center py-6">
                   <p className="text-red-500 mb-4">Failed to load job recommendations</p>
-                  <Button variant="outline" onClick={() => window.location.reload()}>
+                  <Button variant="outline" onClick={() => window.location.reload()} className="rounded-[24px]">
                     Retry
                   </Button>
                 </div>
               ) : recommendedJobs.length > 0 ? (
                 <div className="space-y-4">
                   {recommendedJobs.map(job => (
-                    <div key={job.id} className="border rounded-md p-4">
+                    <div key={job.id} className="border rounded-[24px] p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h3 className="font-medium">{job.title}</h3>
                           <p className="text-sm text-gray-500">{job.company}</p>
                         </div>
-                        <div className="bg-breneo-blue/10 text-breneo-blue px-2 py-1 rounded text-sm font-medium">
+                        <div className="bg-breneo-blue/10 text-breneo-blue px-2 py-1 rounded-[24px] text-sm font-medium">
                           {job.match}% Match
                         </div>
-                      </div>
-                      <div className="mt-3">
-                        <Progress value={job.match} className="h-1.5" />
                       </div>
                     </div>
                   ))}
                   <div className="text-center mt-4">
-                    <Button variant="outline" asChild>
+                    <Button variant="outline" asChild className="rounded-[24px]">
                       <Link to="/jobs">View All Job Offers</Link>
                     </Button>
                   </div>
@@ -143,7 +139,7 @@ const Dashboard = () => {
               ) : (
                 <div className="text-center py-6">
                   <p className="text-gray-500 mb-4">Take your skill test to see job recommendations</p>
-                  <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90">
+                  <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90 rounded-[24px]">
                     <Link to="/skill-test">Take Skill Test</Link>
                   </Button>
                 </div>
@@ -151,7 +147,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="rounded-[24px]">
             <CardHeader>
               <CardTitle>Recommended Courses</CardTitle>
               <CardDescription>Improve your skills with these learning paths</CardDescription>
@@ -160,16 +156,16 @@ const Dashboard = () => {
               {recommendedCourses.length > 0 ? (
                 <div className="space-y-4">
                   {recommendedCourses.map(course => (
-                    <div key={course.id} className="border rounded-md p-4">
+                    <div key={course.id} className="border rounded-[24px] p-4">
                       <div className="mb-2">
                         <h3 className="font-medium">{course.title}</h3>
                         <p className="text-sm text-gray-500">{course.provider} · {course.duration}</p>
                       </div>
-                      <Button variant="outline" size="sm" className="mt-2">View Course</Button>
+                      <Button variant="outline" size="sm" className="mt-2 rounded-[24px]">View Course</Button>
                     </div>
                   ))}
                   <div className="text-center mt-4">
-                    <Button variant="outline" asChild>
+                    <Button variant="outline" asChild className="rounded-[24px]">
                       <Link to="/courses">View All Courses</Link>
                     </Button>
                   </div>
@@ -177,7 +173,7 @@ const Dashboard = () => {
               ) : (
                 <div className="text-center py-6">
                   <p className="text-gray-500 mb-4">Take your skill test to get course recommendations</p>
-                  <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90">
+                  <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90 rounded-[24px]">
                     <Link to="/skill-test">Take Skill Test</Link>
                   </Button>
                 </div>
@@ -186,7 +182,7 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        <Card>
+        <Card className="rounded-[24px]">
           <CardHeader>
             <CardTitle>Your Progress</CardTitle>
             <CardDescription>Track your journey with Breneo</CardDescription>
@@ -198,7 +194,6 @@ const Dashboard = () => {
                   <span className="text-sm font-medium">Profile Completion</span>
                   <span className="text-sm text-gray-500">60%</span>
                 </div>
-                <Progress value={60} className="h-2" />
               </div>
               
               <div>
@@ -208,7 +203,6 @@ const Dashboard = () => {
                     {user.skillTestTaken ? 'Completed' : 'Not Started'}
                   </span>
                 </div>
-                <Progress value={user.skillTestTaken ? 100 : 0} className="h-2" />
               </div>
               
               <div>
@@ -216,7 +210,6 @@ const Dashboard = () => {
                   <span className="text-sm font-medium">Courses Progress</span>
                   <span className="text-sm text-gray-500">0/5</span>
                 </div>
-                <Progress value={0} className="h-2" />
               </div>
             </div>
 
@@ -224,7 +217,7 @@ const Dashboard = () => {
               <p className="text-sm text-gray-500 mb-3">
                 Complete your profile and skill assessment for better recommendations
               </p>
-              <Button variant="outline" className="text-breneo-blue">Update Profile</Button>
+              <Button variant="outline" className="text-breneo-blue rounded-[24px]">Update Profile</Button>
             </div>
           </CardContent>
         </Card>
