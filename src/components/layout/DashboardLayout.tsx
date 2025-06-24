@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { AppSidebar } from './AppSidebar';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const isMobile = useIsMobile();
 
   const toggleSidebar = () => {
     setSidebarCollapsed(prev => !prev);
@@ -19,10 +21,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <AppSidebar collapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
       
       <main className={cn(
-        "transition-all duration-300 min-h-screen",
-        sidebarCollapsed ? "ml-28" : "ml-72"
+        "min-h-screen transition-all duration-300",
+        isMobile 
+          ? "pt-20 pb-20" // Top header height + bottom nav height
+          : sidebarCollapsed 
+            ? "ml-28" 
+            : "ml-72"
       )}>
-        {children}
+        <div className={cn(
+          "w-full",
+          isMobile ? "px-4" : ""
+        )}>
+          {children}
+        </div>
       </main>
     </div>
   );
