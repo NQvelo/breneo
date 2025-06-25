@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, Settings, LogOut } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard, Briefcase, BookOpen, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,6 +13,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
   const { user, signOut } = useAuth();
+  const location = useLocation();
   
   const navItems = [
     {
@@ -26,7 +27,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
       href: '/jobs'
     },
     {
-      icon: Settings,
+      icon: BookOpen,
       label: 'Courses',
       href: '/courses'
     }
@@ -64,20 +65,42 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
 
       <div className="flex-1 overflow-y-auto py-6 bg-white">
         <nav className="space-y-2 px-2">
-          {navItems.map((item, index) => (
-            <Link
-              key={index}
-              to={item.href}
-              className={cn(
-                "flex items-center space-x-3 px-3 py-3 rounded-md transition-all text-black",
-                "hover:bg-white/10",
-                window.location.pathname === item.href ? "bg-white/20" : ""
-              )}
-            >
-              <item.icon size={20} className="text-black" />
-              {!collapsed && <span>{item.label}</span>}
-            </Link>
-          ))}
+          {navItems.map((item, index) => {
+            const isActive = location.pathname === item.href;
+            return (
+              <Link
+                key={index}
+                to={item.href}
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-3 rounded-md transition-all duration-200 text-black group",
+                  "hover:bg-breneo-blue/10 hover:text-breneo-blue",
+                  isActive 
+                    ? "bg-breneo-blue text-white shadow-md" 
+                    : "hover:shadow-sm"
+                )}
+              >
+                <item.icon 
+                  size={20} 
+                  className={cn(
+                    "transition-colors duration-200",
+                    isActive 
+                      ? "text-white" 
+                      : "text-black group-hover:text-breneo-blue"
+                  )} 
+                />
+                {!collapsed && (
+                  <span className={cn(
+                    "font-medium transition-colors duration-200",
+                    isActive 
+                      ? "text-white" 
+                      : "group-hover:text-breneo-blue"
+                  )}>
+                    {item.label}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </nav>
       </div>
 
@@ -100,7 +123,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
             onClick={handleSignOut}
             variant="ghost"
             size="sm"
-            className="w-full mt-2 text-black hover:bg-gray-100"
+            className="w-full mt-2 text-black hover:bg-gray-100 transition-colors duration-200"
           >
             <LogOut size={16} className="mr-2" />
             Sign Out
