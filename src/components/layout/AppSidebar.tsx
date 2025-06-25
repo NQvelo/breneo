@@ -98,21 +98,21 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
 
       {/* Desktop Sidebar */}
       <div className={cn(
-        "hidden md:block h-screen fixed top-4 left-4 bottom-4 z-40 bg-breneo-navy text-white transition-all duration-300 flex-col rounded-[20px]",
-        collapsed ? "w-20" : "w-64"
+        "hidden md:block h-screen fixed top-0 left-0 bottom-0 z-40 bg-breneo-navy text-white transition-all duration-300 flex-col rounded-r-[0px]",
+        collapsed ? "w-24" : "w-80"
       )}>
-        <div className="p-4 flex items-center justify-between border-b border-white/10 bg-white rounded-t-[20px]">
+        <div className="p-6 flex items-center justify-between border-b border-white/10 bg-white">
           <div className="flex items-center">
             {!collapsed && (
               <Link to="/" className="flex items-center space-x-2">
-                <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10" />
+                <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-12" />
               </Link>
             )}
             {collapsed && (
               <img 
                 src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" 
                 alt="Breneo Logo" 
-                className="h-10 w-10" 
+                className="h-12 w-12" 
                 style={{
                   objectFit: 'cover',
                   objectPosition: 'left'
@@ -122,8 +122,8 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-6 bg-white">
-          <nav className="space-y-2 px-2">
+        <div className="flex-1 overflow-y-auto py-8 bg-white">
+          <nav className="space-y-2 px-4">
             {navItems.map((item, index) => {
               const isActive = location.pathname === item.href;
               return (
@@ -131,7 +131,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
                   key={index}
                   to={item.href}
                   className={cn(
-                    "flex items-center space-x-3 px-3 py-3 rounded-md transition-all duration-200 text-black group",
+                    "flex items-center space-x-4 px-4 py-4 rounded-md transition-all duration-200 text-black group",
                     "hover:bg-breneo-blue/10 hover:text-breneo-blue active:bg-breneo-blue/20",
                     isActive 
                       ? "bg-breneo-blue text-white shadow-md" 
@@ -139,7 +139,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
                   )}
                 >
                   <item.icon 
-                    size={20} 
+                    size={22} 
                     className={cn(
                       "transition-colors duration-200",
                       isActive 
@@ -149,7 +149,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
                   />
                   {!collapsed && (
                     <span className={cn(
-                      "font-medium transition-colors duration-200",
+                      "font-medium transition-colors duration-200 text-lg",
                       isActive 
                         ? "text-white" 
                         : "group-hover:text-breneo-blue"
@@ -163,9 +163,9 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-white/10 bg-white rounded-b-[20px]">
-          <div className={cn("flex items-center", collapsed ? "justify-center" : "space-x-3")}>
-            <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold">
+        <div className="p-6 border-t border-white/10 bg-white">
+          <div className={cn("flex items-center", collapsed ? "justify-center" : "space-x-4")}>
+            <div className="h-10 w-10 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold">
               {user?.email?.charAt(0).toUpperCase() || 'U'}
             </div>
             {!collapsed && (
@@ -182,7 +182,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
               onClick={handleSignOut}
               variant="ghost"
               size="sm"
-              className="w-full mt-2 text-black hover:bg-gray-100 hover:text-red-500 transition-colors duration-200"
+              className="w-full mt-3 text-black hover:bg-gray-100 hover:text-red-500 transition-colors duration-200"
             >
               <LogOut size={16} className="mr-2" />
               Sign Out
