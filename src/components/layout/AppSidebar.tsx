@@ -1,10 +1,17 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, BookOpen, LogOut } from 'lucide-react';
+import { LayoutDashboard, Briefcase, BookOpen, LogOut, User, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -37,6 +44,42 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
     await signOut();
   };
 
+  const ProfileDropdown = () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 rounded-full p-0">
+          <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold text-sm">
+            {user?.email?.charAt(0).toUpperCase() || 'U'}
+          </div>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56 bg-white" align="end">
+        <div className="flex items-center justify-start gap-2 p-2">
+          <div className="flex flex-col space-y-1 leading-none">
+            <p className="font-medium text-sm">
+              {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+            </p>
+            <p className="w-[200px] truncate text-xs text-muted-foreground">
+              {user?.email}
+            </p>
+          </div>
+        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/profile" className="flex items-center">
+            <User className="mr-2 h-4 w-4" />
+            Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+          <LogOut className="mr-2 h-4 w-4" />
+          Sign Out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   return (
     <>
       {/* Mobile Header */}
@@ -45,11 +88,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
           <Link to="/" className="flex items-center">
             <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-8" />
           </Link>
-          <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold text-sm">
-              {user?.email?.charAt(0).toUpperCase() || 'U'}
-            </div>
-          </div>
+          <ProfileDropdown />
         </div>
       </div>
 
@@ -86,13 +125,6 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
               </Link>
             );
           })}
-          <button
-            onClick={handleSignOut}
-            className="flex flex-col items-center py-2 px-3 rounded-lg transition-all duration-200 min-w-0 flex-1 mx-1 text-gray-600 hover:text-red-500 hover:bg-red-50 active:bg-red-100"
-          >
-            <LogOut size={20} className="mb-1" />
-            <span className="text-xs font-medium text-center">Sign Out</span>
-          </button>
         </nav>
       </div>
 
@@ -102,23 +134,26 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
         collapsed ? "w-20" : "w-64"
       )}>
         <div className="p-4 flex items-center justify-between border-b border-white/10 bg-white rounded-t-[20px]">
-          <div className="flex items-center">
-            {!collapsed && (
-              <Link to="/" className="flex items-center space-x-2">
-                <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10" />
-              </Link>
-            )}
-            {collapsed && (
-              <img 
-                src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" 
-                alt="Breneo Logo" 
-                className="h-10 w-10" 
-                style={{
-                  objectFit: 'cover',
-                  objectPosition: 'left'
-                }} 
-              />
-            )}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center">
+              {!collapsed && (
+                <Link to="/" className="flex items-center space-x-2">
+                  <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10" />
+                </Link>
+              )}
+              {collapsed && (
+                <img 
+                  src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" 
+                  alt="Breneo Logo" 
+                  className="h-10 w-10" 
+                  style={{
+                    objectFit: 'cover',
+                    objectPosition: 'left'
+                  }} 
+                />
+              )}
+            </div>
+            {!collapsed && <ProfileDropdown />}
           </div>
         </div>
 
@@ -163,32 +198,27 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-white/10 bg-white rounded-b-[20px]">
-          <div className={cn("flex items-center", collapsed ? "justify-center" : "space-x-3")}>
-            <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold">
-              {user?.email?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            {!collapsed && (
+        {collapsed && (
+          <div className="p-4 border-t border-white/10 bg-white rounded-b-[20px] flex justify-center">
+            <ProfileDropdown />
+          </div>
+        )}
+
+        {!collapsed && (
+          <div className="p-4 border-t border-white/10 bg-white rounded-b-[20px]">
+            <div className="flex items-center space-x-3">
+              <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold">
+                {user?.email?.charAt(0).toUpperCase() || 'U'}
+              </div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-black truncate">
                   {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
                 </p>
                 <p className="text-xs text-gray-500 truncate">{user?.email}</p>
               </div>
-            )}
+            </div>
           </div>
-          {!collapsed && (
-            <Button
-              onClick={handleSignOut}
-              variant="ghost"
-              size="sm"
-              className="w-full mt-2 text-black hover:bg-gray-100 hover:text-red-500 transition-colors duration-200"
-            >
-              <LogOut size={16} className="mr-2" />
-              Sign Out
-            </Button>
-          )}
-        </div>
+        )}
       </div>
     </>
   );
