@@ -20,9 +20,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       
       <main className={cn(
         "transition-all duration-300 min-h-screen",
-        sidebarCollapsed ? "ml-28" : "ml-72"
+        // Desktop margins
+        "md:ml-72",
+        sidebarCollapsed ? "md:ml-28" : "md:ml-72",
+        // Mobile padding for header and bottom nav
+        "pt-16 pb-20 md:pt-0 md:pb-0"
       )}>
-        {children}
+        <div className="px-4 md:px-6">
+          {children}
+        </div>
       </main>
     </div>
   );
