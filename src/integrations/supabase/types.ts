@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      dynamictestquestions: {
+        Row: {
+          category: string
+          createdat: string
+          id: string
+          isactive: boolean
+          options: Json
+          order: number | null
+          questionid: string
+          questiontext: string
+          updatedat: string
+        }
+        Insert: {
+          category: string
+          createdat?: string
+          id?: string
+          isactive?: boolean
+          options: Json
+          order?: number | null
+          questionid: string
+          questiontext: string
+          updatedat?: string
+        }
+        Update: {
+          category?: string
+          createdat?: string
+          id?: string
+          isactive?: boolean
+          options?: Json
+          order?: number | null
+          questionid?: string
+          questiontext?: string
+          updatedat?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -30,6 +66,33 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      usertestanswers: {
+        Row: {
+          answeredat: string
+          id: string
+          questionid: string
+          relatedskills: string[]
+          selectedlabel: string
+          userid: string
+        }
+        Insert: {
+          answeredat?: string
+          id?: string
+          questionid: string
+          relatedskills: string[]
+          selectedlabel: string
+          userid: string
+        }
+        Update: {
+          answeredat?: string
+          id?: string
+          questionid?: string
+          relatedskills?: string[]
+          selectedlabel?: string
+          userid?: string
         }
         Relationships: []
       }

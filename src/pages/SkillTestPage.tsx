@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { SkillTest } from '@/components/skills/SkillTest';
+import { DynamicSkillTest } from '@/components/skills/DynamicSkillTest';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 
 const SkillTestPage = () => {
@@ -8,7 +8,7 @@ const SkillTestPage = () => {
     <DashboardLayout>
       <div className="p-6">
         <h1 className="text-2xl font-bold text-breneo-navy mb-6">Skill Assessment</h1>
-        <SkillTest />
+        <DynamicSkillTest />
       </div>
     </DashboardLayout>
   );
