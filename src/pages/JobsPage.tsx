@@ -9,6 +9,9 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SkillBasedJobFilter } from '@/components/skills/SkillBasedJobFilter';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { calculateSkillScores } from '@/utils/skillTestUtils';
 
 interface Job {
   id: string;
@@ -42,6 +45,9 @@ const fetchJobs = async (searchTerm: string = '') => {
 };
 
 const JobsPage = () => {
+  const { user } = useAuth();
+  const [userSkillScores, setUserSkillScores] = useState<Record<string, number>>({});
+  const [totalUserAnswers, setTotalUserAnswers] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
@@ -58,27 +64,82 @@ const JobsPage = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
+  // Fetch user's skill scores
+  useEffect(() => {
+    const fetchUserSkills = async () => {
+      if (!user) return;
+
+      try {
+        const { data: answers, error } = await supabase
+          .from('usertestanswers')
+          .select('*')
+          .eq('userid', user.id);
+
+        if (error || !answers || answers.length === 0) {
+          return;
+        }
+
+        const skillScores = calculateSkillScores(answers);
+        setUserSkillScores(skillScores);
+        setTotalUserAnswers(answers.length);
+      } catch (error) {
+        console.error('Error fetching user skills:', error);
+      }
+    };
+
+    fetchUserSkills();
+  }, [user]);
+
   const { data: jobs = [], isLoading, error } = useQuery({
     queryKey: ['jobs', debouncedSearchTerm],
     queryFn: () => fetchJobs(debouncedSearchTerm),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  // Calculate job match percentage based on user's skills
+  const calculateJobMatch = (jobTitle: string, jobDescription: string) => {
+    if (Object.keys(userSkillScores).length === 0 || totalUserAnswers === 0) {
+      return 0; // No test results available
+    }
+
+    const jobText = `${jobTitle} ${jobDescription}`.toLowerCase();
+    let matchingSkills = 0;
+    let totalUserSkillWeight = 0;
+
+    Object.entries(userSkillScores).forEach(([skill, score]) => {
+      const skillWeight = (score as number) / totalUserAnswers;
+      totalUserSkillWeight += skillWeight;
+      
+      if (jobText.includes(skill.toLowerCase())) {
+        matchingSkills += skillWeight;
+      }
+    });
+
+    if (totalUserSkillWeight === 0) return 0;
+    
+    const matchPercentage = Math.round((matchingSkills / totalUserSkillWeight) * 100);
+    return Math.min(matchPercentage, 95); // Cap at 95% to be realistic
+  };
+
   // Transform and filter jobs
-  const transformedJobs = jobs.map((job: any) => ({
-    id: job.id,
-    title: job.title,
-    company: job.company_name,
-    location: job.candidate_required_location || 'Remote',
-    type: job.job_type || 'Full-time',
-    description: job.description?.substring(0, 200) + '...' || 'No description available',
-    url: job.url,
-    remote: true,
-    postedAt: new Date(job.publication_date).toLocaleDateString(),
-    match: Math.floor(Math.random() * 30) + 70, // Random match percentage for demo
-    requirements: ['Remote work', 'Flexible hours', 'Competitive salary'],
-    company_logo: job.company_logo
-  }));
+  const transformedJobs = jobs.map((job: any) => {
+    const matchPercentage = calculateJobMatch(job.title, job.description || '');
+    
+    return {
+      id: job.id,
+      title: job.title,
+      company: job.company_name,
+      location: job.candidate_required_location || 'Remote',
+      type: job.job_type || 'Full-time',
+      description: job.description?.substring(0, 200) + '...' || 'No description available',
+      url: job.url,
+      remote: true,
+      postedAt: new Date(job.publication_date).toLocaleDateString(),
+      match: matchPercentage,
+      requirements: ['Remote work', 'Flexible hours', 'Competitive salary'],
+      company_logo: job.company_logo
+    };
+  });
 
   // Enhanced filtering with skill-based matching
   const filteredJobs = transformedJobs.filter((job: any) => {
