@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { TestResults } from '@/components/skills/TestResults';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -129,6 +129,9 @@ export default function ProfilePage() {
           <User className="h-6 w-6" />
           <h1 className="text-2xl font-bold">Profile Settings</h1>
         </div>
+
+        {/* Test Results Section */}
+        <TestResults />
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Profile Information */}

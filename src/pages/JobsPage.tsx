@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SkillBasedJobFilter } from '@/components/skills/SkillBasedJobFilter';
 import { useQuery } from '@tanstack/react-query';
 
 interface Job {
@@ -46,6 +46,7 @@ const JobsPage = () => {
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [remoteOnly, setRemoteOnly] = useState(false);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
   // Debounce search term
@@ -79,13 +80,20 @@ const JobsPage = () => {
     company_logo: job.company_logo
   }));
 
-  // Filter jobs based on local filters
+  // Enhanced filtering with skill-based matching
   const filteredJobs = transformedJobs.filter((job: any) => {
     const matchesType = selectedTypes.length === 0 || selectedTypes.includes(job.type);
     const matchesLocation = selectedLocation === 'all' || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
     const matchesRemote = !remoteOnly || job.remote;
     
-    return matchesType && matchesLocation && matchesRemote;
+    // Skill-based filtering - check if job title or description contains selected skills
+    const matchesSkills = selectedSkills.length === 0 || 
+      selectedSkills.some(skill => 
+        job.title.toLowerCase().includes(skill.toLowerCase()) ||
+        job.description.toLowerCase().includes(skill.toLowerCase())
+      );
+    
+    return matchesType && matchesLocation && matchesRemote && matchesSkills;
   });
 
   const handleTypeToggle = (type: string) => {
@@ -101,6 +109,7 @@ const JobsPage = () => {
     setSelectedTypes([]);
     setSelectedLocation('all');
     setRemoteOnly(false);
+    setSelectedSkills([]);
   };
 
   return (
@@ -138,6 +147,14 @@ const JobsPage = () => {
           <div className="space-y-6">
             <Card className="rounded-[24px]">
               <CardContent className="p-5">
+                {/* Skill-based filtering */}
+                <SkillBasedJobFilter 
+                  selectedSkills={selectedSkills}
+                  onSkillsChange={setSelectedSkills}
+                />
+                
+                <Separator className="my-4" />
+                
                 <h3 className="font-medium mb-3">Job Type</h3>
                 <div className="space-y-2">
                   {['Full-time', 'Part-time', 'Contract', 'Freelance'].map(type => (
@@ -208,6 +225,13 @@ const JobsPage = () => {
               </div>
             ) : filteredJobs.length > 0 ? (
               <div className="space-y-4">
+                {selectedSkills.length > 0 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-[24px] p-4 mb-4">
+                    <p className="text-sm text-blue-800">
+                      Showing jobs filtered by your skills: <strong>{selectedSkills.join(', ')}</strong>
+                    </p>
+                  </div>
+                )}
                 {filteredJobs.map((job: any) => (
                   <Card key={job.id} className="overflow-hidden rounded-[24px]">
                     <CardContent className="p-0">

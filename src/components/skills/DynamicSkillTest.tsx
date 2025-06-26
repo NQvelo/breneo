@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { calculateSkillScores, getTopSkills } from '@/utils/skillTestUtils';
 
 interface QuestionOption {
   label: string;
@@ -181,30 +181,19 @@ export function DynamicSkillTest() {
   };
 
   const finishTest = async () => {
-    // Calculate skill scores
-    const skillCounts: Record<string, number> = {};
-    
-    answers.forEach(answer => {
-      answer.relatedSkills.forEach(skill => {
-        skillCounts[skill] = (skillCounts[skill] || 0) + 1;
-      });
-    });
-
-    // Find top skills
-    const topSkills = Object.entries(skillCounts)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 3)
-      .map(([skill]) => skill);
+    // Calculate skill scores using the utility function
+    const skillScores = calculateSkillScores(answers);
+    const topSkills = getTopSkills(skillScores, 3);
 
     console.log('Test completed! Top skills:', topSkills);
     console.log('All answers:', answers);
 
     toast({
       title: "Test completed!",
-      description: `Your top skills: ${topSkills.join(', ')}`,
+      description: `Your top skills: ${topSkills.map(s => s.skill).join(', ')}`,
     });
 
-    navigate('/dashboard');
+    navigate('/profile');
   };
 
   if (isLoading) {
