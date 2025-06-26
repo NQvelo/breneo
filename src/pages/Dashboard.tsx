@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -15,6 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { supabase } from '@/integrations/supabase/client';
+import { calculateSkillScores } from '@/utils/skillTestUtils';
 
 interface Job {
   id: string;
@@ -32,7 +33,7 @@ interface Job {
 const fetchJobs = async () => {
   const baseUrl = 'https://remotive.com/api/remote-jobs';
   const params = new URLSearchParams();
-  params.append('limit', '5'); // Get only 5 jobs for dashboard
+  params.append('limit', '20'); // Get more jobs to have better matching options
   
   const response = await fetch(`${baseUrl}?${params}`);
   if (!response.ok) {
@@ -52,6 +53,32 @@ const Dashboard = () => {
     skillTestTaken: false
   };
 
+  // Fetch user's skill scores
+  const { data: userSkillScores = {}, isLoading: skillsLoading } = useQuery({
+    queryKey: ['user-skills', user?.id],
+    queryFn: async () => {
+      if (!user) return {};
+
+      try {
+        const { data: answers, error } = await supabase
+          .from('usertestanswers')
+          .select('*')
+          .eq('userid', user.id);
+
+        if (error || !answers || answers.length === 0) {
+          return {};
+        }
+
+        return calculateSkillScores(answers);
+      } catch (error) {
+        console.error('Error fetching user skills:', error);
+        return {};
+      }
+    },
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   // Fetch real jobs
   const { data: jobs = [], isLoading: jobsLoading, error: jobsError } = useQuery({
     queryKey: ['dashboard-jobs'],
@@ -59,13 +86,44 @@ const Dashboard = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Transform jobs for display
-  const recommendedJobs = jobs.slice(0, 2).map((job: any) => ({
-    id: job.id,
-    title: job.title,
-    company: job.company_name,
-    match: Math.floor(Math.random() * 30) + 70, // Random match percentage for demo
-  }));
+  // Calculate job match percentage based on user's skills
+  const calculateJobMatch = (jobTitle: string, jobDescription: string) => {
+    if (Object.keys(userSkillScores).length === 0) {
+      return Math.floor(Math.random() * 30) + 70; // Fallback to random for demo
+    }
+
+    const jobText = `${jobTitle} ${jobDescription}`.toLowerCase();
+    let matchingSkills = 0;
+    let totalUserSkills = Object.keys(userSkillScores).length;
+
+    Object.entries(userSkillScores).forEach(([skill, score]) => {
+      if (jobText.includes(skill.toLowerCase())) {
+        matchingSkills += (score as number);
+      }
+    });
+
+    if (totalUserSkills === 0) return 0;
+    
+    const matchPercentage = Math.round((matchingSkills / totalUserSkills) * 10);
+    return Math.min(Math.max(matchPercentage, 0), 95); // Cap between 0-95%
+  };
+
+  // Transform jobs and calculate matches
+  const transformedJobs = jobs.map((job: any) => {
+    const matchPercentage = calculateJobMatch(job.title, job.description || '');
+    
+    return {
+      id: job.id,
+      title: job.title,
+      company: job.company_name,
+      match: matchPercentage,
+    };
+  });
+
+  // Get top 3 matched jobs
+  const recommendedJobs = transformedJobs
+    .sort((a: any, b: any) => b.match - a.match)
+    .slice(0, 3);
 
   // Mock course recommendations
   const recommendedCourses = [
@@ -147,13 +205,13 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
           <Card className="rounded-[24px]">
             <CardHeader className="pb-3 md:pb-6">
-              <CardTitle className="text-lg md:text-xl">Job Matches</CardTitle>
-              <CardDescription className="text-sm md:text-base">Live job recommendations from our partners</CardDescription>
+              <CardTitle className="text-lg md:text-xl">Top Job Matches</CardTitle>
+              <CardDescription className="text-sm md:text-base">Your best matching jobs based on skills</CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
-              {jobsLoading ? (
+              {jobsLoading || skillsLoading ? (
                 <div className="space-y-4">
-                  {[...Array(2)].map((_, i) => (
+                  {[...Array(3)].map((_, i) => (
                     <div key={i} className="border rounded-[24px] p-3 md:p-4">
                       <Skeleton className="h-4 md:h-5 w-3/4 mb-2" />
                       <Skeleton className="h-3 md:h-4 w-1/2 mb-3" />
