@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface QuestionOption {
@@ -60,10 +59,10 @@ export const calculateSkillScores = (answers: any[]) => {
 
 // Get top N skills for a user
 export const getTopSkills = (skillScores: Record<string, number>, limit: number = 3) => {
-  return Object.entries(skillScounts)
-    .sort(([,a], [,b]) => b - a)
+  return Object.entries(skillScores)
+    .sort(([,a], [,b]) => (b as number) - (a as number))
     .slice(0, limit)
-    .map(([skill, score]) => ({ skill, score }));
+    .map(([skill, score]) => ({ skill, score: score as number }));
 };
 
 // Generate skill-based recommendations

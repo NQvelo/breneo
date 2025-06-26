@@ -60,7 +60,7 @@ export function DynamicSkillTest() {
         questionid: item.questionid,
         category: item.category,
         questiontext: item.questiontext,
-        options: item.options as QuestionOption[],
+        options: (item.options as unknown) as QuestionOption[],
         order: item.order,
         isactive: item.isactive
       })) as Question[];
