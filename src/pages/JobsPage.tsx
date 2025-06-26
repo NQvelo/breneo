@@ -141,21 +141,23 @@ const JobsPage = () => {
     };
   });
 
-  // Enhanced filtering with skill-based matching
-  const filteredJobs = transformedJobs.filter((job: any) => {
-    const matchesType = selectedTypes.length === 0 || selectedTypes.includes(job.type);
-    const matchesLocation = selectedLocation === 'all' || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
-    const matchesRemote = !remoteOnly || job.remote;
-    
-    // Skill-based filtering - check if job title or description contains selected skills
-    const matchesSkills = selectedSkills.length === 0 || 
-      selectedSkills.some(skill => 
-        job.title.toLowerCase().includes(skill.toLowerCase()) ||
-        job.description.toLowerCase().includes(skill.toLowerCase())
-      );
-    
-    return matchesType && matchesLocation && matchesRemote && matchesSkills;
-  });
+  // Enhanced filtering with skill-based matching and sorting by match percentage
+  const filteredJobs = transformedJobs
+    .filter((job: any) => {
+      const matchesType = selectedTypes.length === 0 || selectedTypes.includes(job.type);
+      const matchesLocation = selectedLocation === 'all' || job.location.toLowerCase().includes(selectedLocation.toLowerCase());
+      const matchesRemote = !remoteOnly || job.remote;
+      
+      // Skill-based filtering - check if job title or description contains selected skills
+      const matchesSkills = selectedSkills.length === 0 || 
+        selectedSkills.some(skill => 
+          job.title.toLowerCase().includes(skill.toLowerCase()) ||
+          job.description.toLowerCase().includes(skill.toLowerCase())
+        );
+      
+      return matchesType && matchesLocation && matchesRemote && matchesSkills;
+    })
+    .sort((a: any, b: any) => b.match - a.match); // Sort by match percentage from highest to lowest
 
   const handleTypeToggle = (type: string) => {
     if (selectedTypes.includes(type)) {
