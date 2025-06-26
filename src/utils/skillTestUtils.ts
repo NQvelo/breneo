@@ -60,7 +60,7 @@ export const calculateSkillScores = (answers: any[]) => {
 
 // Get top N skills for a user
 export const getTopSkills = (skillScores: Record<string, number>, limit: number = 3) => {
-  return Object.entries(skillScores)
+  return Object.entries(skillScounts)
     .sort(([,a], [,b]) => b - a)
     .slice(0, limit)
     .map(([skill, score]) => ({ skill, score }));
@@ -119,7 +119,7 @@ export const addQuestion = async (question: Omit<Question, 'id'>) => {
       questionid: question.questionid,
       category: question.category,
       questiontext: question.questiontext,
-      options: question.options,
+      options: question.options as any, // Cast to Json type
       order: question.order,
       isactive: question.isactive
     }])
@@ -135,9 +135,16 @@ export const addQuestion = async (question: Omit<Question, 'id'>) => {
 
 // Update a question (admin function)
 export const updateQuestion = async (questionId: string, updates: Partial<Question>) => {
+  const updateData: any = { ...updates };
+  
+  // Cast options to Json type if present
+  if (updateData.options) {
+    updateData.options = updateData.options as any;
+  }
+
   const { data, error } = await supabase
     .from('dynamictestquestions')
-    .update(updates)
+    .update(updateData)
     .eq('questionid', questionId)
     .select();
 

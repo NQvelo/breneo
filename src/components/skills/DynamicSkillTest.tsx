@@ -54,7 +54,16 @@ export function DynamicSkillTest() {
         throw error;
       }
 
-      return data as Question[];
+      // Transform the data to match our interface
+      return data.map(item => ({
+        id: item.id,
+        questionid: item.questionid,
+        category: item.category,
+        questiontext: item.questiontext,
+        options: item.options as QuestionOption[],
+        order: item.order,
+        isactive: item.isactive
+      })) as Question[];
     }
   });
 
