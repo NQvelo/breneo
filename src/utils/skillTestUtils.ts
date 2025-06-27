@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface QuestionOption {
@@ -48,10 +49,22 @@ export const getUserTestAnswers = async (userId: string) => {
 export const calculateSkillScores = (answers: any[]) => {
   const skillCounts: Record<string, number> = {};
   
+  if (!answers || !Array.isArray(answers)) {
+    console.error('Invalid answers array:', answers);
+    return skillCounts;
+  }
+  
   answers.forEach(answer => {
-    answer.relatedskills.forEach((skill: string) => {
-      skillCounts[skill] = (skillCounts[skill] || 0) + 1;
-    });
+    // Handle both relatedSkills (from component) and relatedskills (from database)
+    const skills = answer.relatedSkills || answer.relatedskills || [];
+    
+    if (Array.isArray(skills)) {
+      skills.forEach((skill: string) => {
+        if (skill && typeof skill === 'string') {
+          skillCounts[skill] = (skillCounts[skill] || 0) + 1;
+        }
+      });
+    }
   });
 
   return skillCounts;
