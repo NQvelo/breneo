@@ -83,6 +83,8 @@ export function DynamicSkillTest() {
         return;
       }
 
+      console.log('Saving answer for question:', questionId, 'user:', user.id);
+
       const { error } = await supabase
         .from('usertestanswers')
         .upsert({
@@ -90,6 +92,8 @@ export function DynamicSkillTest() {
           questionid: questionId,
           selectedlabel: selectedLabel,
           relatedskills: relatedSkills
+        }, {
+          onConflict: 'userid,questionid'
         });
 
       if (error) {
@@ -99,9 +103,16 @@ export function DynamicSkillTest() {
           description: "Please try again.",
           variant: "destructive"
         });
+      } else {
+        console.log('Answer saved successfully');
       }
     } catch (error) {
       console.error('Error saving answer:', error);
+      toast({
+        title: "Error saving answer",
+        description: "Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
