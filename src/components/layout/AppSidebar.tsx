@@ -47,7 +47,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
   const ProfileDropdown = () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 rounded-full p-0">
+        <Button variant="ghost" className="h-8 w-8 rounded-full p-0 hover:bg-gray-100">
           <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold text-sm">
             {user?.email?.charAt(0).toUpperCase() || 'U'}
           </div>
@@ -128,12 +128,13 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
         </nav>
       </div>
 
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar - Full Height */}
       <div className={cn(
-        "hidden md:block h-screen fixed top-4 left-4 bottom-4 z-40 bg-breneo-navy text-white transition-all duration-300 flex-col rounded-[20px]",
+        "hidden md:block h-screen fixed top-0 left-0 bottom-0 z-40 bg-white border-r border-gray-200 transition-all duration-300 flex-col shadow-sm",
         collapsed ? "w-20" : "w-64"
       )}>
-        <div className="p-4 flex items-center justify-between border-b border-white/10 bg-white rounded-t-[20px]">
+        {/* Header */}
+        <div className="p-4 flex items-center justify-between border-b border-gray-100">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center">
               {!collapsed && (
@@ -157,8 +158,9 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto py-6 bg-white">
-          <nav className="space-y-2 px-2">
+        {/* Navigation */}
+        <div className="flex-1 overflow-y-auto py-6">
+          <nav className="space-y-1 px-3">
             {navItems.map((item, index) => {
               const isActive = location.pathname === item.href;
               return (
@@ -166,25 +168,31 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
                   key={index}
                   to={item.href}
                   className={cn(
-                    "flex items-center space-x-3 px-3 py-3 rounded-md transition-all duration-200 text-black group",
-                    "hover:bg-breneo-blue/10 hover:text-breneo-blue active:bg-breneo-blue/20",
+                    "flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 text-gray-700 group relative overflow-hidden",
+                    "hover:bg-gradient-to-r hover:from-breneo-blue/5 hover:to-breneo-blue/10 hover:text-breneo-blue hover:shadow-sm",
+                    "active:scale-[0.98] active:bg-breneo-blue/15",
                     isActive 
-                      ? "bg-breneo-blue text-white shadow-md" 
-                      : "hover:shadow-sm"
+                      ? "bg-gradient-to-r from-breneo-blue to-breneo-blue/90 text-white shadow-md ring-1 ring-breneo-blue/20" 
+                      : "hover:translate-x-1"
                   )}
                 >
+                  {/* Active indicator */}
+                  {isActive && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full" />
+                  )}
+                  
                   <item.icon 
                     size={20} 
                     className={cn(
-                      "transition-colors duration-200",
+                      "transition-all duration-200 flex-shrink-0",
                       isActive 
-                        ? "text-white" 
-                        : "text-black group-hover:text-breneo-blue"
+                        ? "text-white drop-shadow-sm" 
+                        : "text-gray-500 group-hover:text-breneo-blue group-hover:scale-110"
                     )} 
                   />
                   {!collapsed && (
                     <span className={cn(
-                      "font-medium transition-colors duration-200",
+                      "font-medium transition-all duration-200 truncate",
                       isActive 
                         ? "text-white" 
                         : "group-hover:text-breneo-blue"
@@ -192,26 +200,33 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
                       {item.label}
                     </span>
                   )}
+                  
+                  {/* Hover effect overlay */}
+                  <div className={cn(
+                    "absolute inset-0 bg-gradient-to-r from-transparent to-breneo-blue/5 opacity-0 transition-opacity duration-200",
+                    !isActive && "group-hover:opacity-100"
+                  )} />
                 </Link>
               );
             })}
           </nav>
         </div>
 
+        {/* Footer */}
         {collapsed && (
-          <div className="p-4 border-t border-white/10 bg-white rounded-b-[20px] flex justify-center">
+          <div className="p-4 border-t border-gray-100 flex justify-center">
             <ProfileDropdown />
           </div>
         )}
 
         {!collapsed && (
-          <div className="p-4 border-t border-white/10 bg-white rounded-b-[20px]">
+          <div className="p-4 border-t border-gray-100">
             <div className="flex items-center space-x-3">
               <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold">
                 {user?.email?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-black truncate">
+                <p className="text-sm font-medium text-gray-900 truncate">
                   {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
                 </p>
                 <p className="text-xs text-gray-500 truncate">{user?.email}</p>
