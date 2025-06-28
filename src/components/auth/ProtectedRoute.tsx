@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, userProfile, loading } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -23,14 +23,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (!user) {
     return <Navigate to="/auth" replace />;
-  }
-
-  // Check if user needs to complete onboarding
-  if (userProfile && !userProfile.onboarding_completed) {
-    const currentPath = window.location.pathname;
-    if (currentPath !== '/interests') {
-      return <Navigate to="/interests" replace />;
-    }
   }
 
   return <>{children}</>;
