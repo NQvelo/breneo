@@ -38,11 +38,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Check if user has completed onboarding
           setTimeout(async () => {
             try {
-              const { data: profile } = await supabase
+              const { data: profile, error } = await supabase
                 .from('profiles')
                 .select('onboarding_completed, interests')
                 .eq('id', session.user.id)
                 .single();
+
+              if (error) {
+                console.error('Error checking profile:', error);
+                // If profile doesn't exist or error occurs, redirect to interests
+                if (!location.pathname.includes('/interests')) {
+                  navigate('/interests');
+                }
+                return;
+              }
 
               // Only redirect if not already on interests or dashboard page
               if (!location.pathname.includes('/interests') && !location.pathname.includes('/dashboard')) {

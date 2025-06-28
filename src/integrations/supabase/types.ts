@@ -51,6 +51,8 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          interests: string[] | null
+          onboarding_completed: boolean | null
           updated_at: string | null
         }
         Insert: {
@@ -58,6 +60,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          interests?: string[] | null
+          onboarding_completed?: boolean | null
           updated_at?: string | null
         }
         Update: {
@@ -65,6 +69,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          interests?: string[] | null
+          onboarding_completed?: boolean | null
           updated_at?: string | null
         }
         Relationships: []
