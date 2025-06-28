@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,7 +12,18 @@ export function AuthForm() {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, userProfile } = useAuth();
+
+  React.useEffect(() => {
+    // If user is already authenticated, check onboarding status
+    if (userProfile) {
+      if (!userProfile.onboarding_completed) {
+        navigate('/interests');
+      } else {
+        navigate('/dashboard');
+      }
+    }
+  }, [userProfile, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +32,7 @@ export function AuthForm() {
     const { error } = await signIn(email, password);
     
     if (!error) {
-      navigate('/dashboard');
+      // Navigation will be handled by the useEffect above
     }
     
     setLoading(false);

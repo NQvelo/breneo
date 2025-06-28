@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const INTERESTS = [
   { id: 1, name: 'Marketing', icon: '📣' },
@@ -19,8 +20,10 @@ const INTERESTS = [
 
 export function InterestsSelection() {
   const [selected, setSelected] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { updateUserProfile } = useAuth();
 
   const toggleInterest = (id: number) => {
     if (selected.includes(id)) {
@@ -30,7 +33,7 @@ export function InterestsSelection() {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selected.length === 0) {
       toast({
         title: "Please select at least one area of interest",
@@ -39,11 +42,36 @@ export function InterestsSelection() {
       return;
     }
 
-    toast({
-      title: "Interests saved!",
-      description: "Your personalized experience is ready.",
-    });
-    navigate('/dashboard');
+    setLoading(true);
+
+    try {
+      // Convert selected IDs to interest names
+      const selectedInterests = selected.map(id => 
+        INTERESTS.find(interest => interest.id === id)?.name
+      ).filter(Boolean);
+
+      // Update user profile with interests and mark onboarding as complete
+      await updateUserProfile({
+        interests: selectedInterests,
+        onboarding_completed: true
+      });
+
+      toast({
+        title: "Interests saved!",
+        description: "Your personalized experience is ready.",
+      });
+
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error saving interests:', error);
+      toast({
+        title: "Error saving interests",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -76,9 +104,10 @@ export function InterestsSelection() {
       <div className="mt-8 flex justify-end">
         <Button
           onClick={handleContinue}
+          disabled={loading}
           className="bg-breneo-blue hover:bg-breneo-blue/90"
         >
-          Continue
+          {loading ? 'Saving...' : 'Continue'}
         </Button>
       </div>
     </div>
