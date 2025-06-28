@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const INTERESTS = [
   { id: 1, name: 'Marketing', icon: '📣' },
@@ -19,8 +21,10 @@ const INTERESTS = [
 
 export function InterestsSelection() {
   const [selected, setSelected] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const toggleInterest = (id: number) => {
     if (selected.includes(id)) {
@@ -30,7 +34,7 @@ export function InterestsSelection() {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selected.length === 0) {
       toast({
         title: "Please select at least one area of interest",
@@ -39,11 +43,48 @@ export function InterestsSelection() {
       return;
     }
 
-    toast({
-      title: "Interests saved!",
-      description: "Your personalized experience is ready.",
-    });
-    navigate('/dashboard');
+    setIsLoading(true);
+
+    try {
+      // Save interests to user profile
+      if (user) {
+        const selectedInterests = INTERESTS.filter(interest => selected.includes(interest.id))
+          .map(interest => interest.name);
+
+        const { error } = await supabase
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            interests: selectedInterests,
+            onboarding_completed: true
+          });
+
+        if (error) {
+          console.error('Error saving interests:', error);
+          toast({
+            title: "Failed to save interests",
+            description: "Please try again.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+
+      toast({
+        title: "Interests saved!",
+        description: "Your personalized experience is ready.",
+      });
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Something went wrong",
+        description: "Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -58,10 +99,10 @@ export function InterestsSelection() {
         {INTERESTS.map((interest) => (
           <Card 
             key={interest.id}
-            className={`p-4 cursor-pointer transition-all border-2 ${
+            className={`p-4 cursor-pointer transition-all border-2 rounded-2xl ${
               selected.includes(interest.id) 
-                ? 'border-breneo-blue bg-breneo-blue/5' 
-                : 'border-transparent hover:border-gray-200'
+                ? 'border-[#1BABE5] bg-[#1BABE5]/5' 
+                : 'border-gray-100 hover:border-gray-200'
             }`}
             onClick={() => toggleInterest(interest.id)}
           >
@@ -76,9 +117,10 @@ export function InterestsSelection() {
       <div className="mt-8 flex justify-end">
         <Button
           onClick={handleContinue}
-          className="bg-breneo-blue hover:bg-breneo-blue/90"
+          disabled={isLoading}
+          className="bg-[#1BABE5] hover:bg-[#1BABE5]/90 rounded-2xl"
         >
-          Continue
+          {isLoading ? 'Saving...' : 'Continue'}
         </Button>
       </div>
     </div>

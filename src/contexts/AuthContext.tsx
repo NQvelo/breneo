@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
@@ -20,15 +21,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log('Auth state changed:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Handle authentication flow
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Check if user has completed onboarding
+          setTimeout(async () => {
+            try {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('onboarding_completed, interests')
+                .eq('id', session.user.id)
+                .single();
+
+              // Only redirect if not already on interests or dashboard page
+              if (!location.pathname.includes('/interests') && !location.pathname.includes('/dashboard')) {
+                if (!profile?.onboarding_completed || !profile?.interests?.length) {
+                  navigate('/interests');
+                } else {
+                  navigate('/dashboard');
+                }
+              }
+            } catch (error) {
+              console.error('Error checking profile:', error);
+              // If profile doesn't exist or error occurs, redirect to interests
+              if (!location.pathname.includes('/interests')) {
+                navigate('/interests');
+              }
+            }
+          }, 0);
+        }
       }
     );
 
@@ -40,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate, location.pathname]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
     try {
@@ -117,6 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
+      navigate('/');
       toast({
         title: "Signed out",
         description: "You've been successfully signed out."

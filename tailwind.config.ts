@@ -26,7 +26,7 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				breneo: {
-					blue: '#19B5FE',
+					blue: '#1BABE5',
 					navy: '#303B5A',
 					accent: '#6C63FF',
 					lightgray: '#F8F9FA',

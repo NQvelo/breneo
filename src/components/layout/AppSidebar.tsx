@@ -47,13 +47,13 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
   const ProfileDropdown = () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 rounded-full p-0 hover:bg-gray-100">
-          <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold text-sm">
+        <Button variant="ghost" className="h-10 w-10 rounded-full p-0 hover:bg-gray-50">
+          <div className="h-10 w-10 rounded-full bg-[#1BABE5] flex items-center justify-center text-white font-semibold text-sm">
             {user?.email?.charAt(0).toUpperCase() || 'U'}
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 bg-white" align="end">
+      <DropdownMenuContent className="w-56 bg-white border-gray-100" align="end">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
             <p className="font-medium text-sm">
@@ -83,7 +83,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
   return (
     <>
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 px-4 py-3">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
             <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-8" />
@@ -93,7 +93,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100">
         <nav className="flex justify-around items-center py-2">
           {navItems.map((item, index) => {
             const isActive = location.pathname === item.href;
@@ -102,23 +102,23 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
                 key={index}
                 to={item.href}
                 className={cn(
-                  "flex flex-col items-center py-2 px-3 rounded-lg transition-all duration-200 min-w-0 flex-1 mx-1",
-                  "hover:bg-breneo-blue/10 active:bg-breneo-blue/20",
+                  "flex flex-col items-center py-2 px-3 rounded-xl transition-all duration-200 min-w-0 flex-1 mx-1",
+                  "hover:bg-[#1BABE5]/10 active:bg-[#1BABE5]/20",
                   isActive 
-                    ? "bg-breneo-blue/10 text-breneo-blue" 
-                    : "text-gray-600 hover:text-breneo-blue"
+                    ? "bg-[#1BABE5]/10 text-[#1BABE5]" 
+                    : "text-gray-600 hover:text-[#1BABE5]"
                 )}
               >
                 <item.icon 
                   size={20} 
                   className={cn(
                     "transition-colors duration-200 mb-1",
-                    isActive ? "text-breneo-blue" : "group-hover:text-breneo-blue"
+                    isActive ? "text-[#1BABE5]" : "group-hover:text-[#1BABE5]"
                   )} 
                 />
                 <span className={cn(
                   "text-xs font-medium transition-colors duration-200 text-center",
-                  isActive ? "text-breneo-blue" : "group-hover:text-breneo-blue"
+                  isActive ? "text-[#1BABE5]" : "group-hover:text-[#1BABE5]"
                 )}>
                   {item.label}
                 </span>
@@ -130,11 +130,11 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
 
       {/* Desktop Sidebar - Full Height */}
       <div className={cn(
-        "hidden md:block h-screen fixed top-0 left-0 bottom-0 z-40 bg-white border-r border-gray-200 transition-all duration-300 flex-col shadow-sm",
+        "hidden md:block h-screen fixed top-0 left-0 bottom-0 z-40 bg-white border-r border-gray-100 transition-all duration-300 flex-col",
         collapsed ? "w-20" : "w-64"
       )}>
         {/* Header */}
-        <div className="p-4 flex items-center justify-between border-b border-gray-100">
+        <div className="p-4 flex items-center justify-between border-b border-gray-50">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center">
               {!collapsed && (
@@ -160,7 +160,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
 
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto py-6">
-          <nav className="space-y-1 px-3">
+          <nav className="space-y-2 px-3">
             {navItems.map((item, index) => {
               const isActive = location.pathname === item.href;
               return (
@@ -168,44 +168,33 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
                   key={index}
                   to={item.href}
                   className={cn(
-                    "flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 text-gray-700 group relative overflow-hidden",
-                    "hover:bg-gradient-to-r hover:from-breneo-blue/5 hover:to-breneo-blue/10 hover:text-breneo-blue hover:shadow-sm",
-                    "active:scale-[0.98] active:bg-breneo-blue/15",
+                    "flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 group relative",
+                    "hover:bg-[#1BABE5]/8 hover:text-[#1BABE5]",
+                    "active:scale-[0.98]",
                     isActive 
-                      ? "bg-gradient-to-r from-breneo-blue to-breneo-blue/90 text-white shadow-md ring-1 ring-breneo-blue/20" 
-                      : "hover:translate-x-1"
+                      ? "bg-[#1BABE5]/12 text-[#1BABE5] font-medium" 
+                      : ""
                   )}
                 >
-                  {/* Active indicator */}
-                  {isActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full" />
-                  )}
-                  
                   <item.icon 
                     size={20} 
                     className={cn(
                       "transition-all duration-200 flex-shrink-0",
                       isActive 
-                        ? "text-white drop-shadow-sm" 
-                        : "text-gray-500 group-hover:text-breneo-blue group-hover:scale-110"
+                        ? "text-[#1BABE5]" 
+                        : "text-gray-500 group-hover:text-[#1BABE5]"
                     )} 
                   />
                   {!collapsed && (
                     <span className={cn(
                       "font-medium transition-all duration-200 truncate",
                       isActive 
-                        ? "text-white" 
-                        : "group-hover:text-breneo-blue"
+                        ? "text-[#1BABE5]" 
+                        : "group-hover:text-[#1BABE5]"
                     )}>
                       {item.label}
                     </span>
                   )}
-                  
-                  {/* Hover effect overlay */}
-                  <div className={cn(
-                    "absolute inset-0 bg-gradient-to-r from-transparent to-breneo-blue/5 opacity-0 transition-opacity duration-200",
-                    !isActive && "group-hover:opacity-100"
-                  )} />
                 </Link>
               );
             })}
@@ -214,15 +203,15 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
 
         {/* Footer */}
         {collapsed && (
-          <div className="p-4 border-t border-gray-100 flex justify-center">
+          <div className="p-4 border-t border-gray-50 flex justify-center">
             <ProfileDropdown />
           </div>
         )}
 
         {!collapsed && (
-          <div className="p-4 border-t border-gray-100">
+          <div className="p-4 border-t border-gray-50">
             <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold">
+              <div className="h-10 w-10 rounded-full bg-[#1BABE5] flex items-center justify-center text-white font-semibold">
                 {user?.email?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="flex-1">
