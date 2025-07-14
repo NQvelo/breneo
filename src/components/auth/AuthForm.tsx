@@ -36,11 +36,7 @@ export function AuthForm() {
     const { error } = await signUp(email, password, name);
     
     if (!error) {
-      // Don't navigate immediately - user needs to verify email
-      setEmail('');
-      setPassword('');
-      setName('');
-      setPhone('');
+      navigate('/dashboard');
     }
     
     setLoading(false);
