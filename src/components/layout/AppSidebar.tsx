@@ -1,17 +1,9 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, BookOpen, LogOut, User, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { LayoutDashboard, Briefcase, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -19,7 +11,6 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
-  const { user, signOut } = useAuth();
   const location = useLocation();
   
   const navItems = [
@@ -40,45 +31,6 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
     }
   ];
 
-  const handleSignOut = async () => {
-    await signOut();
-  };
-
-  const ProfileDropdown = () => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 rounded-full p-0 hover:bg-gray-100">
-          <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold text-sm">
-            {user?.email?.charAt(0).toUpperCase() || 'U'}
-          </div>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 bg-white" align="end">
-        <div className="flex items-center justify-start gap-2 p-2">
-          <div className="flex flex-col space-y-1 leading-none">
-            <p className="font-medium text-sm">
-              {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
-            </p>
-            <p className="w-[200px] truncate text-xs text-muted-foreground">
-              {user?.email}
-            </p>
-          </div>
-        </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/profile" className="flex items-center">
-            <User className="mr-2 h-4 w-4" />
-            Profile
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign Out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
 
   return (
     <>
@@ -88,7 +40,6 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
           <Link to="/" className="flex items-center">
             <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-8" />
           </Link>
-          <ProfileDropdown />
         </div>
       </div>
 
@@ -154,7 +105,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
                 />
               )}
             </div>
-            {!collapsed && <ProfileDropdown />}
+            
           </div>
         </div>
 
@@ -212,28 +163,6 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
           </nav>
         </div>
 
-        {/* Footer */}
-        {collapsed && (
-          <div className="p-4 border-t border-gray-100 flex justify-center">
-            <ProfileDropdown />
-          </div>
-        )}
-
-        {!collapsed && (
-          <div className="p-4 border-t border-gray-100">
-            <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold">
-                {user?.email?.charAt(0).toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
-                </p>
-                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </>
   );
