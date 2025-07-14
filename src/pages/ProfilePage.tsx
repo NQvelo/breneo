@@ -266,8 +266,8 @@ export default function ProfilePage() {
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Email Verified:</span>
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">
-                    {user?.email_confirmed_at ? 'Yes' : 'No'}
+                  <span className={`text-sm ${user?.email_confirmed_at ? 'text-muted-foreground' : 'text-destructive font-medium'}`}>
+                    {user?.email_confirmed_at ? 'Yes' : 'Not Confirmed'}
                   </span>
                   {!user?.email_confirmed_at && (
                     <Button 
