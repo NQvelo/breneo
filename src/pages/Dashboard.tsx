@@ -292,45 +292,112 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        <Card className="rounded-[24px]">
-          <CardHeader className="pb-3 md:pb-6">
-            <CardTitle className="text-lg md:text-xl">Your Progress</CardTitle>
-            <CardDescription className="text-sm md:text-base">Track your journey with Breneo</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="space-y-4 md:space-y-6">
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm md:text-base font-medium">Profile Completion</span>
-                  <span className="text-sm md:text-base text-gray-500">60%</span>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          <Card className="rounded-[24px]">
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="text-lg md:text-xl">Profile Information</CardTitle>
+              <CardDescription className="text-sm md:text-base">Your account details</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold text-xl">
+                    {user?.email?.charAt(0).toUpperCase() || 'ND'}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Nodar Dumbadze'}
+                    </h3>
+                    <p className="text-gray-500">Business owner</p>
+                  </div>
                 </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm md:text-base font-medium">Skill Assessment</span>
-                  <span className="text-sm md:text-base text-gray-500">
-                    {userData.skillTestTaken ? 'Completed' : 'Not Started'}
-                  </span>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Email:</span>
+                    <span>{user?.email || 'nodar@example.com'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Role:</span>
+                    <span>Business Owner</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Status:</span>
+                    <span className="text-green-600">Active</span>
+                  </div>
                 </div>
+                <Button variant="outline" className="w-full rounded-[24px]" asChild>
+                  <Link to="/profile">Edit Profile</Link>
+                </Button>
               </div>
-              
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm md:text-base font-medium">Courses Progress</span>
-                  <span className="text-sm md:text-base text-gray-500">0/5</span>
-                </div>
-              </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <div className="mt-4 md:mt-6 text-center">
-              <p className="text-xs md:text-sm text-gray-500 mb-3">
-                Complete your profile and skill assessment for better recommendations
-              </p>
-              <Button variant="outline" className="text-breneo-blue rounded-[24px] text-sm md:text-base w-full sm:w-auto">Update Profile</Button>
-            </div>
-          </CardContent>
-        </Card>
+          <Card className="rounded-[24px]">
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="text-lg md:text-xl">Your Progress</CardTitle>
+              <CardDescription className="text-sm md:text-base">Track your journey</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="space-y-4 md:space-y-6">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm md:text-base font-medium">Profile Completion</span>
+                    <span className="text-sm md:text-base text-gray-500">60%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '60%' }}></div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm md:text-base font-medium">Skill Assessment</span>
+                    <span className="text-sm md:text-base text-gray-500">
+                      {userData.skillTestTaken ? 'Completed' : 'Not Started'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm md:text-base font-medium">Courses Progress</span>
+                    <span className="text-sm md:text-base text-gray-500">0/5</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 md:mt-6 text-center">
+                <p className="text-xs md:text-sm text-gray-500 mb-3">
+                  Complete your profile and skill assessment for better recommendations
+                </p>
+                <Button variant="outline" className="text-blue-600 rounded-[24px] text-sm md:text-base w-full">Update Profile</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-[24px]">
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="text-lg md:text-xl">Quick Stats</CardTitle>
+              <CardDescription className="text-sm md:text-base">Your activity overview</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="space-y-4">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">0</div>
+                  <div className="text-sm text-gray-600">Jobs Applied</div>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">0</div>
+                  <div className="text-sm text-gray-600">Courses Completed</div>
+                </div>
+                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                  <div className="text-2xl font-bold text-purple-600">0</div>
+                  <div className="text-sm text-gray-600">Skills Acquired</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   );
