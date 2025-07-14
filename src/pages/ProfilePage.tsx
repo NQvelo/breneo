@@ -25,6 +25,9 @@ export default function ProfilePage() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  
+  // Email verification state
+  const [emailVerificationLoading, setEmailVerificationLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -119,6 +122,38 @@ export default function ProfilePage() {
       });
     } finally {
       setPasswordLoading(false);
+    }
+  };
+
+  const handleSendVerificationEmail = async () => {
+    setEmailVerificationLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: user?.email || ''
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Verification email sent successfully. Please check your inbox."
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setEmailVerificationLoading(false);
     }
   };
 
@@ -230,9 +265,21 @@ export default function ProfilePage() {
               <Separator />
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">Email Verified:</span>
-                <span className="text-sm text-gray-600">
-                  {user?.email_confirmed_at ? 'Yes' : 'No'}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">
+                    {user?.email_confirmed_at ? 'Yes' : 'No'}
+                  </span>
+                  {!user?.email_confirmed_at && (
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={handleSendVerificationEmail}
+                      disabled={emailVerificationLoading}
+                    >
+                      {emailVerificationLoading ? 'Sending...' : 'Send Verification Email'}
+                    </Button>
+                  )}
+                </div>
               </div>
               <Separator />
               <div className="flex justify-between items-center">
