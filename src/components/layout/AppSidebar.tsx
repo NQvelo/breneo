@@ -1,17 +1,9 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, BookOpen, LogOut, User, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { LayoutDashboard, Briefcase, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -19,7 +11,6 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
-  const { user, signOut } = useAuth();
   const location = useLocation();
   
   const navItems = [
@@ -30,73 +21,16 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
     },
     {
       icon: Briefcase,
-      label: 'Branches',
+      label: 'Job Offers',
       href: '/jobs'
     },
     {
       icon: BookOpen,
-      label: 'Employees',
+      label: 'Courses',
       href: '/courses'
-    },
-    {
-      icon: Settings,
-      label: 'Alerts',
-      href: '/alerts'
     }
   ];
 
-  const appItems = [
-    {
-      icon: Settings,
-      label: 'Settings',
-      href: '/settings'
-    },
-    {
-      icon: User,
-      label: 'Support',
-      href: '/support'
-    }
-  ];
-
-  const handleSignOut = async () => {
-    await signOut();
-  };
-
-  const ProfileDropdown = () => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 rounded-full p-0 hover:bg-gray-100">
-          <div className="h-8 w-8 rounded-full bg-breneo-blue flex items-center justify-center text-white font-semibold text-sm">
-            {user?.email?.charAt(0).toUpperCase() || 'U'}
-          </div>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 bg-white" align="end">
-        <div className="flex items-center justify-start gap-2 p-2">
-          <div className="flex flex-col space-y-1 leading-none">
-            <p className="font-medium text-sm">
-              {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
-            </p>
-            <p className="w-[200px] truncate text-xs text-muted-foreground">
-              {user?.email}
-            </p>
-          </div>
-        </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to="/profile" className="flex items-center">
-            <User className="mr-2 h-4 w-4" />
-            Profile
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign Out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
 
   return (
     <>
@@ -106,7 +40,6 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
           <Link to="/" className="flex items-center">
             <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-8" />
           </Link>
-          <ProfileDropdown />
         </div>
       </div>
 
@@ -152,120 +85,84 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
         collapsed ? "w-20" : "w-64"
       )}>
         {/* Header */}
-        <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-              <div className="w-4 h-4 bg-white rounded-sm"></div>
+        <div className="p-4 flex items-center justify-between border-b border-gray-100">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center">
+              {!collapsed && (
+                <Link to="/" className="flex items-center space-x-2">
+                  <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10" />
+                </Link>
+              )}
+              {collapsed && (
+                <img 
+                  src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" 
+                  alt="Breneo Logo" 
+                  className="h-10 w-10" 
+                  style={{
+                    objectFit: 'cover',
+                    objectPosition: 'left'
+                  }} 
+                />
+              )}
             </div>
-            {!collapsed && (
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900">CashFlow</h1>
-                <p className="text-sm text-gray-500">Enterprise</p>
-              </div>
-            )}
+            
           </div>
         </div>
 
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto py-6">
-          {/* Main Section */}
-          <div className="px-6 mb-6">
-            {!collapsed && <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Main</h3>}
-            <nav className="space-y-1">
-              {navItems.map((item, index) => {
-                const isActive = location.pathname === item.href;
-                return (
-                  <Link
-                    key={index}
-                    to={item.href}
+          <nav className="space-y-1 px-3">
+            {navItems.map((item, index) => {
+              const isActive = location.pathname === item.href;
+              return (
+                <Link
+                  key={index}
+                  to={item.href}
+                  className={cn(
+                    "flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 text-gray-700 group relative overflow-hidden",
+                    "hover:bg-gradient-to-r hover:from-breneo-blue/5 hover:to-breneo-blue/10 hover:text-breneo-blue hover:shadow-sm",
+                    "active:scale-[0.98] active:bg-breneo-blue/15",
+                    isActive 
+                      ? "bg-gradient-to-r from-breneo-blue to-breneo-blue/90 text-white shadow-md ring-1 ring-breneo-blue/20" 
+                      : "hover:translate-x-1"
+                  )}
+                >
+                  {/* Active indicator */}
+                  {isActive && (
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full" />
+                  )}
+                  
+                  <item.icon 
+                    size={20} 
                     className={cn(
-                      "flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-gray-600 group",
+                      "transition-all duration-200 flex-shrink-0",
                       isActive 
-                        ? "bg-blue-50 text-blue-600 border-r-2 border-blue-600" 
-                        : "hover:bg-gray-50 hover:text-gray-900"
-                    )}
-                  >
-                    <item.icon 
-                      size={18} 
-                      className={cn(
-                        "flex-shrink-0",
-                        isActive ? "text-blue-600" : "text-gray-400"
-                      )} 
-                    />
-                    {!collapsed && (
-                      <span className="font-medium">
-                        {item.label}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* App Section */}
-          <div className="px-6">
-            {!collapsed && <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">App</h3>}
-            <nav className="space-y-1">
-              {appItems.map((item, index) => {
-                const isActive = location.pathname === item.href;
-                return (
-                  <Link
-                    key={index}
-                    to={item.href}
-                    className={cn(
-                      "flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-gray-600 group",
+                        ? "text-white drop-shadow-sm" 
+                        : "text-gray-500 group-hover:text-breneo-blue group-hover:scale-110"
+                    )} 
+                  />
+                  {!collapsed && (
+                    <span className={cn(
+                      "font-medium transition-all duration-200 truncate",
                       isActive 
-                        ? "bg-blue-50 text-blue-600 border-r-2 border-blue-600" 
-                        : "hover:bg-gray-50 hover:text-gray-900"
-                    )}
-                  >
-                    <item.icon 
-                      size={18} 
-                      className={cn(
-                        "flex-shrink-0",
-                        isActive ? "text-blue-600" : "text-gray-400"
-                      )} 
-                    />
-                    {!collapsed && (
-                      <span className="font-medium">
-                        {item.label}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+                        ? "text-white" 
+                        : "group-hover:text-breneo-blue"
+                    )}>
+                      {item.label}
+                    </span>
+                  )}
+                  
+                  {/* Hover effect overlay */}
+                  <div className={cn(
+                    "absolute inset-0 bg-gradient-to-r from-transparent to-breneo-blue/5 opacity-0 transition-opacity duration-200",
+                    !isActive && "group-hover:opacity-100"
+                  )} />
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Footer */}
-        {!collapsed && (
-          <div className="p-6 border-t border-gray-100">
-            <div className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors">
-              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold">
-                {user?.email?.charAt(0).toUpperCase() || 'ND'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Nodar Dumbadze'}
-                </p>
-                <p className="text-xs text-gray-500 truncate">Business owner</p>
-              </div>
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </div>
-        )}
-
-        {collapsed && (
-          <div className="p-4 border-t border-gray-100 flex justify-center">
-            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold text-sm">
-              {user?.email?.charAt(0).toUpperCase() || 'ND'}
-            </div>
-          </div>
-        )}
       </div>
     </>
   );
