@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { AppSidebar } from './AppSidebar';
+import { DashboardHeader } from './DashboardHeader';
 import { cn } from '@/lib/utils';
 
 interface DashboardLayoutProps {
@@ -17,14 +18,15 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="h-screen bg-breneo-lightgray overflow-hidden">
       <AppSidebar collapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />
+      <DashboardHeader sidebarCollapsed={sidebarCollapsed} />
       
       <main className={cn(
         "h-full transition-all duration-300 overflow-y-auto",
         // Desktop margins
-        "md:ml-72",
-        sidebarCollapsed ? "md:ml-28" : "md:ml-72",
-        // Mobile padding for header and bottom nav
-        "pt-16 pb-20 md:pt-0 md:pb-0"
+        "md:ml-64",
+        sidebarCollapsed ? "md:ml-20" : "md:ml-64",
+        // Mobile padding for header and bottom nav, desktop padding for fixed header
+        "pt-16 pb-20 md:pt-16 md:pb-0"
       )}>
         <div className="px-4 md:px-6 h-full">
           {children}
