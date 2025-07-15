@@ -40,6 +40,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
     }
   ];
 
+  // Force rebuild to clear Settings reference cache
 
   return (
     <>
