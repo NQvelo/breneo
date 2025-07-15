@@ -130,7 +130,7 @@ const Dashboard = () => {
       <div className="py-4 md:py-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 md:mb-6 space-y-3 sm:space-y-0">
           <h1 className="text-xl md:text-2xl font-bold text-breneo-navy">Welcome, {userData.name}</h1>
-          <div className="flex items-center space-x-2">
+          <div className="hidden md:flex items-center space-x-2">
             <Button variant="ghost" size="sm" className="p-2">
               <Bell className="h-5 w-5 text-gray-600" />
             </Button>
