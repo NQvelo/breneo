@@ -110,8 +110,8 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 overflow-y-auto py-6">
-          <nav className="space-y-1 px-3">
+        <div className="flex-1 overflow-y-auto pt-8">
+          <nav className="space-y-2 px-4">
             {navItems.map((item, index) => {
               const isActive = location.pathname === item.href;
               return (
@@ -119,44 +119,31 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
                   key={index}
                   to={item.href}
                   className={cn(
-                    "flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 text-gray-700 group relative overflow-hidden",
-                    "hover:bg-gradient-to-r hover:from-breneo-blue/5 hover:to-breneo-blue/10 hover:text-breneo-blue hover:shadow-sm",
-                    "active:scale-[0.98] active:bg-breneo-blue/15",
+                    "flex items-center space-x-4 px-4 py-4 rounded-xl transition-all duration-200 group",
                     isActive 
-                      ? "bg-gradient-to-r from-breneo-blue to-breneo-blue/90 text-white shadow-md ring-1 ring-breneo-blue/20" 
-                      : "hover:translate-x-1"
+                      ? "bg-breneo-blue/10 text-breneo-blue" 
+                      : "text-gray-600 hover:bg-gray-50 hover:text-breneo-blue"
                   )}
                 >
-                  {/* Active indicator */}
-                  {isActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-white rounded-r-full" />
-                  )}
-                  
                   <item.icon 
-                    size={20} 
+                    size={22} 
                     className={cn(
-                      "transition-all duration-200 flex-shrink-0",
+                      "transition-colors duration-200 flex-shrink-0",
                       isActive 
-                        ? "text-white drop-shadow-sm" 
-                        : "text-gray-500 group-hover:text-breneo-blue group-hover:scale-110"
+                        ? "text-breneo-blue" 
+                        : "text-gray-400 group-hover:text-breneo-blue"
                     )} 
                   />
                   {!collapsed && (
                     <span className={cn(
-                      "font-medium transition-all duration-200 truncate",
+                      "font-medium text-base transition-colors duration-200",
                       isActive 
-                        ? "text-white" 
-                        : "group-hover:text-breneo-blue"
+                        ? "text-breneo-blue" 
+                        : "text-gray-600 group-hover:text-breneo-blue"
                     )}>
                       {item.label}
                     </span>
                   )}
-                  
-                  {/* Hover effect overlay */}
-                  <div className={cn(
-                    "absolute inset-0 bg-gradient-to-r from-transparent to-breneo-blue/5 opacity-0 transition-opacity duration-200",
-                    !isActive && "group-hover:opacity-100"
-                  )} />
                 </Link>
               );
             })}
