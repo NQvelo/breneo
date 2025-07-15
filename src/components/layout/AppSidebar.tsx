@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, BookOpen, Settings } from 'lucide-react';
+import { LayoutDashboard, Briefcase, BookOpen, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -31,6 +31,15 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
     }
   ];
 
+  const mobileNavItems = [
+    ...navItems,
+    {
+      icon: User,
+      label: 'Profile',
+      href: '/profile'
+    }
+  ];
+
 
   return (
     <>
@@ -46,7 +55,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
         <nav className="flex justify-around items-center py-2">
-          {navItems.map((item, index) => {
+          {mobileNavItems.map((item, index) => {
             const isActive = location.pathname === item.href;
             return (
               <Link
@@ -110,8 +119,8 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 overflow-y-auto pt-8 flex flex-col">
-          <nav className="space-y-2 px-4 flex-1">
+        <div className="flex-1 overflow-y-auto pt-8">
+          <nav className="space-y-2 px-4">
             {navItems.map((item, index) => {
               const isActive = location.pathname === item.href;
               return (
@@ -148,39 +157,6 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
               );
             })}
           </nav>
-
-          {/* Settings at bottom */}
-          <div className="px-4 pb-6">
-            <Link
-              to="/profile"
-              className={cn(
-                "flex items-center space-x-4 px-4 py-4 rounded-xl transition-all duration-200 group",
-                location.pathname === '/profile'
-                  ? "bg-breneo-blue/10 text-breneo-blue" 
-                  : "text-gray-600 hover:bg-gray-50 hover:text-breneo-blue"
-              )}
-            >
-              <Settings 
-                size={22} 
-                className={cn(
-                  "transition-colors duration-200 flex-shrink-0",
-                  location.pathname === '/profile'
-                    ? "text-breneo-blue" 
-                    : "text-gray-400 group-hover:text-breneo-blue"
-                )} 
-              />
-              {!collapsed && (
-                <span className={cn(
-                  "font-medium text-base transition-colors duration-200",
-                  location.pathname === '/profile'
-                    ? "text-breneo-blue" 
-                    : "text-gray-600 group-hover:text-breneo-blue"
-                )}>
-                  Settings
-                </span>
-              )}
-            </Link>
-          </div>
         </div>
 
       </div>
