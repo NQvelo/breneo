@@ -54,18 +54,6 @@ export function DashboardHeader({ sidebarCollapsed = false }: DashboardHeaderPro
 
         {/* Right side - Actions */}
         <div className="flex items-center space-x-4">
-          {/* Cloud CRM dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors">
-              <span>Cloud CRM</span>
-              <ChevronDown size={16} />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Cloud CRM</DropdownMenuItem>
-              <DropdownMenuItem>Local CRM</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           {/* Notifications */}
           <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <Bell size={20} />
