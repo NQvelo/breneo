@@ -48,7 +48,6 @@ export function DashboardHeader({ sidebarCollapsed = false }: DashboardHeaderPro
         <div className="flex items-center">
           <h1 className="text-xl font-semibold text-gray-900">
             {getPageTitle()}
-            <span className="text-gray-500 font-normal"> /Accounting</span>
           </h1>
         </div>
 
