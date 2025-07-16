@@ -74,12 +74,12 @@ export function DashboardHeader({ sidebarCollapsed = false }: DashboardHeaderPro
                 <ChevronDown size={16} className="text-gray-400" />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem>
+            <DropdownMenuContent align="end" className="w-56 p-2">
+              <DropdownMenuItem className="py-3 px-3">
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuItem onClick={handleLogout} className="py-3 px-3 text-red-600 hover:text-red-700 hover:bg-red-50 focus:text-red-700 focus:bg-red-50">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Logout</span>
               </DropdownMenuItem>
