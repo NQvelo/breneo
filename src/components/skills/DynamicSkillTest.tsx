@@ -265,23 +265,36 @@ export function DynamicSkillTest() {
       <Card className="p-6">
         <h3 className="text-xl font-medium mb-6">{currentQuestion.questiontext}</h3>
         
-        <RadioGroup value={selectedOption || ""} onValueChange={setSelectedOption}>
-          <div className="space-y-4">
-            {currentQuestion.options.map((option, index) => (
-              <div key={index} className="flex items-center space-x-3 p-4 rounded-xl bg-cyan-50 border border-cyan-100 hover:bg-cyan-100 transition-colors cursor-pointer">
-                <RadioGroupItem value={option.label} id={`option-${index}`} className="mt-1" />
+        <div className="space-y-4">
+          {currentQuestion.options.map((option, index) => {
+            const letter = String.fromCharCode(65 + index); // A, B, C, D
+            const isSelected = selectedOption === option.label;
+            
+            return (
+              <div 
+                key={index} 
+                className={`flex items-center space-x-3 p-4 rounded-xl border transition-colors cursor-pointer ${
+                  isSelected 
+                    ? 'bg-cyan-100 border-cyan-200' 
+                    : 'bg-cyan-50 border-cyan-100 hover:bg-cyan-100'
+                }`}
+                onClick={() => setSelectedOption(option.label)}
+              >
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-cyan-200 text-cyan-600 font-medium">
+                  {letter}
+                </div>
                 <div className="flex-1">
-                  <label htmlFor={`option-${index}`} className="text-base cursor-pointer block">
+                  <div className="text-base cursor-pointer block">
                     {option.label}
-                  </label>
+                  </div>
                   <span className="text-xs text-gray-500 mt-1 block">
                     → {option.relatedSkills.join(', ')}
                   </span>
                 </div>
               </div>
-            ))}
-          </div>
-        </RadioGroup>
+            );
+          })}
+        </div>
 
         <div className="mt-8 flex justify-between">
           <Button 
