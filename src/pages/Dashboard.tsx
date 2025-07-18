@@ -127,7 +127,7 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
-      <div>
+      <div className="p-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 md:mb-6 space-y-3 sm:space-y-0">
           <h1 className="text-xl md:text-2xl font-bold text-breneo-navy">Welcome, {userData.name}</h1>
           <div className="hidden md:flex items-center space-x-2">
