@@ -268,7 +268,7 @@ export function DynamicSkillTest() {
         <RadioGroup value={selectedOption || ""} onValueChange={setSelectedOption}>
           <div className="space-y-4">
             {currentQuestion.options.map((option, index) => (
-              <div key={index} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+              <div key={index} className="flex items-center space-x-3 p-4 rounded-xl bg-cyan-50 border border-cyan-100 hover:bg-cyan-100 transition-colors cursor-pointer">
                 <RadioGroupItem value={option.label} id={`option-${index}`} className="mt-1" />
                 <div className="flex-1">
                   <label htmlFor={`option-${index}`} className="text-base cursor-pointer block">
