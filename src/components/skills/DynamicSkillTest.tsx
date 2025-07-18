@@ -287,9 +287,6 @@ export function DynamicSkillTest() {
                   <div className="text-base cursor-pointer block">
                     {option.label}
                   </div>
-                  <span className="text-xs text-gray-500 mt-1 block">
-                    → {option.relatedSkills.join(', ')}
-                  </span>
                 </div>
               </div>
             );
