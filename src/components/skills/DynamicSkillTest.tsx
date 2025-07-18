@@ -248,53 +248,60 @@ export function DynamicSkillTest() {
   const progress = (questionHistory.length / Math.max(questions.length, 10)) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        <Card className="bg-white shadow-lg rounded-2xl p-8 border-0">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-8 text-center leading-relaxed">
-            {currentQuestion.questiontext}
-          </h1>
-          
-          <RadioGroup value={selectedOption || ""} onValueChange={setSelectedOption}>
-            <div className="space-y-4 mb-8">
-              {currentQuestion.options.map((option, index) => (
-                <label 
-                  key={index} 
-                  htmlFor={`option-${index}`}
-                  className={`flex items-center p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
-                    selectedOption === option.label 
-                      ? 'bg-cyan-100 border-cyan-300' 
-                      : 'bg-cyan-50 border-cyan-200 hover:bg-cyan-100 hover:border-cyan-300'
-                  }`}
-                >
-                  <div className="flex items-center w-full">
-                    <span className="text-lg font-medium text-gray-600 mr-4">
-                      {String.fromCharCode(65 + index)}
-                    </span>
-                    <span className="text-lg text-gray-700 flex-1">
-                      {option.label}
-                    </span>
-                    <RadioGroupItem 
-                      value={option.label} 
-                      id={`option-${index}`} 
-                      className="opacity-0"
-                    />
-                  </div>
-                </label>
-              ))}
-            </div>
-          </RadioGroup>
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-lg font-medium">Dynamic Skill Assessment</h2>
+          <span className="text-sm text-gray-500">
+            Question {questionHistory.length}
+          </span>
+        </div>
+        <Progress value={progress} className="h-2" />
+        <p className="text-xs text-gray-400 mt-1">
+          Category: {currentQuestion.category}
+        </p>
+      </div>
 
-          <div className="flex justify-end">
-            <Button 
-              onClick={handleNext}
-              className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 rounded-xl text-lg font-medium"
-              disabled={!selectedOption}
-            >
-              Next →
-            </Button>
+      <Card className="p-6">
+        <h3 className="text-xl font-medium mb-6">{currentQuestion.questiontext}</h3>
+        
+        <RadioGroup value={selectedOption || ""} onValueChange={setSelectedOption}>
+          <div className="space-y-4">
+            {currentQuestion.options.map((option, index) => (
+              <div key={index} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <RadioGroupItem value={option.label} id={`option-${index}`} className="mt-1" />
+                <div className="flex-1">
+                  <label htmlFor={`option-${index}`} className="text-base cursor-pointer block">
+                    {option.label}
+                  </label>
+                  <span className="text-xs text-gray-500 mt-1 block">
+                    → {option.relatedSkills.join(', ')}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
-        </Card>
+        </RadioGroup>
+
+        <div className="mt-8 flex justify-between">
+          <Button 
+            onClick={handlePrevious}
+            variant="outline"
+            disabled={questionHistory.length <= 1}
+          >
+            Previous
+          </Button>
+          <Button 
+            onClick={handleNext}
+            className="bg-breneo-blue hover:bg-breneo-blue/90"
+          >
+            Next Question
+          </Button>
+        </div>
+      </Card>
+
+      <div className="mt-6 text-center text-gray-500 text-sm">
+        <p>This dynamic test adapts based on your answers to provide personalized career recommendations.</p>
       </div>
     </div>
   );
