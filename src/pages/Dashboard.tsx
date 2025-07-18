@@ -127,7 +127,7 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
-      <div className="py-4 md:py-6">
+      <div className="p-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 md:mb-6 space-y-3 sm:space-y-0">
           <h1 className="text-xl md:text-2xl font-bold text-breneo-navy">Welcome, {userData.name}</h1>
           <div className="hidden md:flex items-center space-x-2">
@@ -139,7 +139,7 @@ const Dashboard = () => {
 
         {!userData.skillTestTaken && (
           <Card className="mb-4 md:mb-6 bg-gradient-to-r from-breneo-blue/10 to-breneo-blue/5 border-breneo-blue/20 rounded-[24px]">
-            <CardContent className="p-4 md:p-6">
+            <CardContent className="p-6">
               <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
                 <div>
                   <h3 className="text-lg md:text-xl font-semibold text-breneo-navy mb-2">Start Your Journey with Breneo</h3>

@@ -28,7 +28,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         // Mobile padding for header and bottom nav, desktop padding for fixed header
         "pt-16 pb-20 md:pt-16 md:pb-0"
       )}>
-        <div className="px-4 md:px-6 h-full">
+        <div className="px-6 md:px-6 h-full">
           {children}
         </div>
       </main>
