@@ -26,7 +26,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         "md:ml-64",
         sidebarCollapsed ? "md:ml-20" : "md:ml-64",
         // Mobile padding for header and bottom nav, desktop padding for fixed header
-        "pt-16 pb-20 md:pt-16 md:pb-0"
+        "pt-16 pb-20 md:pt-16 md:pb-0",
+        // Content padding
+        "p-3"
       )}>
         <div className="h-full">
           {children}
