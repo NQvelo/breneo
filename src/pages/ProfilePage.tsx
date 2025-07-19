@@ -124,7 +124,7 @@ export default function ProfilePage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto space-y-6">
+      <div className="container mx-auto py-6 space-y-6">
         <div className="flex items-center space-x-2">
           <User className="h-6 w-6" />
           <h1 className="text-2xl font-bold">Profile Settings</h1>
