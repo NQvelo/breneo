@@ -52,7 +52,7 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-white to-breneo-blue/5 py-16 md:py-24 flex-grow">
-        <div className="container mx-auto px-3">
+        <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-breneo-navy mb-6">
@@ -87,7 +87,7 @@ const LandingPage = () => {
 
       {/* Features Section */}
       <section id="features" className="py-16 bg-white">
-        <div className="container mx-auto px-3">
+        <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-breneo-navy mb-4">Key Features</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
@@ -131,7 +131,7 @@ const LandingPage = () => {
 
       {/* How It Works Section */}
       <section id="how-it-works" className="py-16 bg-gray-50">
-        <div className="container mx-auto px-3">
+        <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-breneo-navy mb-4">How It Works</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
@@ -205,7 +205,7 @@ const LandingPage = () => {
 
       {/* Testimonials */}
       <section className="py-16 bg-white">
-        <div className="container mx-auto px-3">
+        <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-breneo-navy mb-4">What Our Users Say</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
@@ -258,7 +258,7 @@ const LandingPage = () => {
 
       {/* CTA Section */}
       <section className="py-16 bg-breneo-blue/5">
-        <div className="container mx-auto px-3">
+        <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-breneo-navy mb-4">Ready to Accelerate Your Career?</h2>
             <p className="text-gray-600 mb-8">
@@ -273,7 +273,7 @@ const LandingPage = () => {
 
       {/* Footer */}
       <footer className="bg-breneo-navy text-white py-12">
-        <div className="container mx-auto px-3">
+        <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-10 mb-4" />
