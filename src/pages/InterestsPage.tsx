@@ -15,7 +15,7 @@ const InterestsPage = () => {
       </header>
 
       {/* Main content */}
-      <main className="flex-grow py-12">
+      <main className="flex-grow py-12 px-3">
         <InterestsSelection />
       </main>
 

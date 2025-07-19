@@ -15,7 +15,7 @@ const AuthPage = () => {
       </header>
 
       {/* Main content */}
-      <main className="flex-grow flex items-center justify-center py-6 px-4 md:py-12">
+      <main className="flex-grow flex items-center justify-center py-6 px-3 md:py-12">
         <div className="w-full max-w-md">
           <AuthForm />
         </div>
