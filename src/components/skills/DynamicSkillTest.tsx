@@ -1,251 +1,271 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
-import { calculateSkillScores, getTopSkills } from '@/utils/skillTestUtils';
+import { Loader2 } from 'lucide-react';
 
-interface QuestionOption {
-  label: string;
-  relatedSkills: string[];
-  nextQuestionId?: string;
-}
-
-interface Question {
-  id: string;
-  questionid: string;
-  category: string;
-  questiontext: string;
-  options: QuestionOption[];
-  order: number | null;
-  isactive: boolean;
-}
-
-interface UserAnswer {
-  questionId: string;
-  selectedLabel: string;
-  relatedSkills: string[];
+interface TestSummary {
+  strengths: string[];
+  suggested_careers: string[];
+  skill_gaps: string[];
+  learning_recommendations: string[];
+  summary: string;
 }
 
 export function DynamicSkillTest() {
-  const [currentQuestionId, setCurrentQuestionId] = useState<string>('Q1');
-  const [answers, setAnswers] = useState<UserAnswer[]>([]);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [questionHistory, setQuestionHistory] = useState<string[]>(['Q1']);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const [questionNumber, setQuestionNumber] = useState<number>(0);
+  const [userAnswer, setUserAnswer] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const [isCompleted, setIsCompleted] = useState<boolean>(false);
+  const [finalSummary, setFinalSummary] = useState<TestSummary | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Fetch all active questions
-  const { data: questions, isLoading } = useQuery({
-    queryKey: ['dynamicTestQuestions'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('dynamictestquestions')
-        .select('*')
-        .eq('isactive', true)
-        .order('order', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching questions:', error);
-        throw error;
-      }
-
-      // Transform the data to match our interface
-      return data.map(item => ({
-        id: item.id,
-        questionid: item.questionid,
-        category: item.category,
-        questiontext: item.questiontext,
-        options: (item.options as unknown) as QuestionOption[],
-        order: item.order,
-        isactive: item.isactive
-      })) as Question[];
-    }
-  });
-
-  // Get current question
-  const currentQuestion = questions?.find(q => q.questionid === currentQuestionId);
-
-  const saveAnswer = async (questionId: string, selectedLabel: string, relatedSkills: string[]) => {
+  const startTest = async () => {
+    setIsLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await supabase.functions.invoke('dynamic-skill-test', {
+        body: { action: 'start' }
+      });
+
+      if (error) throw error;
+
+      setSessionId(data.sessionId);
+      setCurrentQuestion(data.question);
+      setQuestionNumber(data.questionNumber);
+      setHasStarted(true);
       
-      if (!user) {
-        toast({
-          title: "Authentication required",
-          description: "Please log in to save your answers.",
-          variant: "destructive"
-        });
-        return;
-      }
+      toast({
+        title: "Test started!",
+        description: "Answer each question thoughtfully for the best results.",
+      });
+    } catch (error) {
+      console.error('Error starting test:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start the test. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      console.log('Saving answer for question:', questionId, 'user:', user.id);
+  const submitAnswer = async () => {
+    if (!userAnswer.trim()) {
+      toast({
+        title: "Please provide an answer",
+        description: "Your response helps us create better questions for you.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-      const { error } = await supabase
-        .from('usertestanswers')
-        .upsert({
-          userid: user.id,
-          questionid: questionId,
-          selectedlabel: selectedLabel,
-          relatedskills: relatedSkills
-        }, {
-          onConflict: 'userid,questionid'
-        });
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dynamic-skill-test', {
+        body: {
+          action: 'next',
+          sessionId,
+          answer: userAnswer,
+          questionNumber
+        }
+      });
 
-      if (error) {
-        console.error('Error saving answer:', error);
-        toast({
-          title: "Error saving answer",
-          description: "Please try again.",
-          variant: "destructive"
-        });
+      if (error) throw error;
+
+      if (data.completed) {
+        // Test is finished
+        try {
+          const summary = typeof data.summary === 'string' 
+            ? JSON.parse(data.summary) 
+            : data.summary;
+          setFinalSummary(summary);
+          setIsCompleted(true);
+        } catch (parseError) {
+          console.error('Error parsing summary:', parseError);
+          // Fallback for plain text summary
+          setFinalSummary({
+            strengths: [],
+            suggested_careers: [],
+            skill_gaps: [],
+            learning_recommendations: [],
+            summary: data.summary
+          });
+          setIsCompleted(true);
+        }
       } else {
-        console.log('Answer saved successfully');
+        // Continue with next question
+        setCurrentQuestion(data.question);
+        setQuestionNumber(data.questionNumber);
+        setUserAnswer('');
       }
     } catch (error) {
-      console.error('Error saving answer:', error);
+      console.error('Error submitting answer:', error);
       toast({
-        title: "Error saving answer",
-        description: "Please try again.",
+        title: "Error",
+        description: "Failed to submit your answer. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleNext = async () => {
-    if (!selectedOption || !currentQuestion) {
-      toast({
-        title: "Please select an option",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Find the selected option details
-    const selectedOptionData = currentQuestion.options.find(opt => opt.label === selectedOption);
-    
-    if (!selectedOptionData) {
-      toast({
-        title: "Invalid selection",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Save the answer
-    const newAnswer: UserAnswer = {
-      questionId: currentQuestionId,
-      selectedLabel: selectedOption,
-      relatedSkills: selectedOptionData.relatedSkills
-    };
-
-    setAnswers(prev => [...prev.filter(a => a.questionId !== currentQuestionId), newAnswer]);
-    
-    // Save to database
-    await saveAnswer(currentQuestionId, selectedOption, selectedOptionData.relatedSkills);
-
-    // Determine next question
-    let nextQuestionId: string | null = null;
-
-    if (selectedOptionData.nextQuestionId) {
-      // Use branching logic
-      const nextQuestion = questions?.find(q => q.questionid === selectedOptionData.nextQuestionId);
-      if (nextQuestion) {
-        nextQuestionId = selectedOptionData.nextQuestionId;
-      }
-    }
-
-    // If no branching or next question not found, use linear progression
-    if (!nextQuestionId) {
-      const currentIndex = questions?.findIndex(q => q.questionid === currentQuestionId) || 0;
-      const nextQuestion = questions?.[currentIndex + 1];
-      nextQuestionId = nextQuestion?.questionid || null;
-    }
-
-    if (nextQuestionId) {
-      setCurrentQuestionId(nextQuestionId);
-      setQuestionHistory(prev => [...prev, nextQuestionId]);
-      setSelectedOption(null);
-    } else {
-      // No more questions, finish the test
-      finishTest();
-    }
+  const restartTest = () => {
+    setSessionId(null);
+    setCurrentQuestion('');
+    setQuestionNumber(0);
+    setUserAnswer('');
+    setHasStarted(false);
+    setIsCompleted(false);
+    setFinalSummary(null);
   };
 
-  const handlePrevious = () => {
-    if (questionHistory.length > 1) {
-      const newHistory = [...questionHistory];
-      newHistory.pop(); // Remove current question
-      const previousQuestionId = newHistory[newHistory.length - 1];
-      
-      setQuestionHistory(newHistory);
-      setCurrentQuestionId(previousQuestionId);
-      
-      // Get the previous answer if it exists
-      const previousAnswer = answers.find(a => a.questionId === previousQuestionId);
-      setSelectedOption(previousAnswer?.selectedLabel || null);
-    }
-  };
-
-  const finishTest = async () => {
-    // Calculate skill scores using the utility function
-    const skillScores = calculateSkillScores(answers);
-    const topSkills = getTopSkills(skillScores, 3);
-
-    console.log('Test completed! Top skills:', topSkills);
-    console.log('All answers:', answers);
-
-    toast({
-      title: "Test completed!",
-      description: `Your top skills: ${topSkills.map(s => s.skill).join(', ')}`,
-    });
-
-    navigate('/profile');
-  };
-
-  if (isLoading) {
+  // Start screen
+  if (!hasStarted) {
     return (
       <div className="max-w-2xl mx-auto p-6">
-        <div className="text-center">
-          <p>Loading questions...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!questions || questions.length === 0) {
-    return (
-      <div className="max-w-2xl mx-auto p-6">
-        <Card className="p-6 text-center">
-          <h3 className="text-xl font-medium mb-4">No Questions Available</h3>
-          <p className="text-gray-600 mb-4">There are currently no active test questions.</p>
-          <Button onClick={() => navigate('/dashboard')}>
-            Back to Dashboard
+        <Card className="p-8 text-center">
+          <h2 className="text-2xl font-bold text-breneo-navy mb-4">
+            AI-Powered Dynamic Skill Assessment
+          </h2>
+          <p className="text-gray-600 mb-6">
+            This personalized test adapts based on your answers, using AI to generate 
+            relevant questions that help identify your strengths and career potential.
+          </p>
+          <div className="space-y-4 text-left bg-gray-50 p-4 rounded-lg mb-6">
+            <h3 className="font-semibold text-breneo-navy">What to expect:</h3>
+            <ul className="space-y-2 text-sm text-gray-700">
+              <li>• 5 personalized questions generated by AI</li>
+              <li>• Each question builds on your previous answers</li>
+              <li>• Text-based responses (no multiple choice)</li>
+              <li>• Detailed career analysis at the end</li>
+              <li>• Takes approximately 10-15 minutes</li>
+            </ul>
+          </div>
+          <Button 
+            onClick={startTest}
+            disabled={isLoading}
+            className="bg-breneo-blue hover:bg-breneo-blue/90"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Starting Test...
+              </>
+            ) : (
+              'Start Assessment'
+            )}
           </Button>
         </Card>
       </div>
     );
   }
 
-  if (!currentQuestion) {
+  // Test completion screen
+  if (isCompleted && finalSummary) {
     return (
-      <div className="max-w-2xl mx-auto p-6">
-        <Card className="p-6 text-center">
-          <h3 className="text-xl font-medium mb-4">Question Not Found</h3>
-          <p className="text-gray-600 mb-4">The requested question could not be found.</p>
-          <Button onClick={() => navigate('/dashboard')}>
-            Back to Dashboard
-          </Button>
+      <div className="max-w-4xl mx-auto p-6">
+        <Card className="p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-breneo-navy mb-2">
+              Your Skill Assessment Results
+            </h2>
+            <p className="text-gray-600">
+              Based on your responses, here's your personalized career analysis
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {finalSummary.strengths && finalSummary.strengths.length > 0 && (
+              <div className="bg-green-50 p-6 rounded-lg">
+                <h3 className="font-semibold text-green-800 mb-3">Your Strengths</h3>
+                <ul className="space-y-2">
+                  {finalSummary.strengths.map((strength, index) => (
+                    <li key={index} className="text-green-700 text-sm">
+                      • {strength}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {finalSummary.suggested_careers && finalSummary.suggested_careers.length > 0 && (
+              <div className="bg-blue-50 p-6 rounded-lg">
+                <h3 className="font-semibold text-blue-800 mb-3">Suggested Career Paths</h3>
+                <ul className="space-y-2">
+                  {finalSummary.suggested_careers.map((career, index) => (
+                    <li key={index} className="text-blue-700 text-sm">
+                      • {career}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {finalSummary.skill_gaps && finalSummary.skill_gaps.length > 0 && (
+              <div className="bg-orange-50 p-6 rounded-lg">
+                <h3 className="font-semibold text-orange-800 mb-3">Areas for Growth</h3>
+                <ul className="space-y-2">
+                  {finalSummary.skill_gaps.map((gap, index) => (
+                    <li key={index} className="text-orange-700 text-sm">
+                      • {gap}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {finalSummary.learning_recommendations && finalSummary.learning_recommendations.length > 0 && (
+              <div className="bg-purple-50 p-6 rounded-lg">
+                <h3 className="font-semibold text-purple-800 mb-3">Learning Recommendations</h3>
+                <ul className="space-y-2">
+                  {finalSummary.learning_recommendations.map((rec, index) => (
+                    <li key={index} className="text-purple-700 text-sm">
+                      • {rec}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {finalSummary.summary && (
+            <div className="bg-gray-50 p-6 rounded-lg mb-8">
+              <h3 className="font-semibold text-gray-800 mb-3">Detailed Analysis</h3>
+              <p className="text-gray-700 leading-relaxed">{finalSummary.summary}</p>
+            </div>
+          )}
+
+          <div className="flex gap-4 justify-center">
+            <Button 
+              onClick={restartTest}
+              variant="outline"
+            >
+              Take Another Test
+            </Button>
+            <Button 
+              onClick={() => navigate('/dashboard')}
+              className="bg-breneo-blue hover:bg-breneo-blue/90"
+            >
+              Back to Dashboard
+            </Button>
+          </div>
         </Card>
       </div>
     );
   }
 
-  const progress = (questionHistory.length / Math.max(questions.length, 10)) * 100;
+  // Test in progress
+  const progress = (questionNumber / 5) * 100;
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -253,65 +273,51 @@ export function DynamicSkillTest() {
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-lg font-medium">Dynamic Skill Assessment</h2>
           <span className="text-sm text-gray-500">
-            Question {questionHistory.length}
+            Question {questionNumber} of 5
           </span>
         </div>
         <Progress value={progress} className="h-2" />
         <p className="text-xs text-gray-400 mt-1">
-          Category: {currentQuestion.category}
+          AI-generated questions based on your responses
         </p>
       </div>
 
       <Card className="p-6">
-        <h3 className="text-xl font-medium mb-6">{currentQuestion.questiontext}</h3>
+        <h3 className="text-xl font-medium mb-6">{currentQuestion}</h3>
         
-        <div className="space-y-4">
-          {currentQuestion.options.map((option, index) => {
-            const letter = String.fromCharCode(65 + index); // A, B, C, D
-            const isSelected = selectedOption === option.label;
-            
-            return (
-              <div 
-                key={index} 
-                className={`flex items-center space-x-3 p-4 rounded-xl border transition-colors cursor-pointer ${
-                  isSelected 
-                    ? 'bg-cyan-100 border-cyan-200' 
-                    : 'bg-cyan-50 border-cyan-100 hover:bg-cyan-100'
-                }`}
-                onClick={() => setSelectedOption(option.label)}
-              >
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-cyan-200 text-cyan-600 font-medium">
-                  {letter}
-                </div>
-                <div className="flex-1">
-                  <div className="text-base cursor-pointer block">
-                    {option.label}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="space-y-4 mb-6">
+          <Textarea
+            value={userAnswer}
+            onChange={(e) => setUserAnswer(e.target.value)}
+            placeholder="Share your thoughts, experiences, or examples that relate to this question..."
+            className="min-h-[120px] resize-none"
+            disabled={isLoading}
+          />
+          <p className="text-sm text-gray-500">
+            Provide detailed answers to help AI generate better follow-up questions.
+          </p>
         </div>
 
-        <div className="mt-8 flex justify-between">
+        <div className="flex justify-end">
           <Button 
-            onClick={handlePrevious}
-            variant="outline"
-            disabled={questionHistory.length <= 1}
-          >
-            Previous
-          </Button>
-          <Button 
-            onClick={handleNext}
+            onClick={submitAnswer}
+            disabled={isLoading || !userAnswer.trim()}
             className="bg-breneo-blue hover:bg-breneo-blue/90"
           >
-            Next Question
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {questionNumber >= 5 ? 'Generating Results...' : 'Generating Next Question...'}
+              </>
+            ) : (
+              questionNumber >= 5 ? 'Complete Assessment' : 'Next Question'
+            )}
           </Button>
         </div>
       </Card>
 
       <div className="mt-6 text-center text-gray-500 text-sm">
-        <p>This dynamic test adapts based on your answers to provide personalized career recommendations.</p>
+        <p>Each question is uniquely generated based on your previous responses using advanced AI.</p>
       </div>
     </div>
   );

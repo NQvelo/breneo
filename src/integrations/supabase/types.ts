@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      dynamic_skill_tests: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          final_summary: string | null
+          id: string
+          session_data: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          final_summary?: string | null
+          id?: string
+          session_data?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          final_summary?: string | null
+          id?: string
+          session_data?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       dynamictestquestions: {
         Row: {
           category: string
