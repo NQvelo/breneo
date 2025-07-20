@@ -31,8 +31,16 @@ export function DynamicSkillTest() {
   const startTest = async () => {
     setIsLoading(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
       const { data, error } = await supabase.functions.invoke('dynamic-skill-test', {
-        body: { action: 'start' }
+        body: { action: 'start' },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
 
       if (error) throw error;
@@ -70,13 +78,21 @@ export function DynamicSkillTest() {
 
     setIsLoading(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
       const { data, error } = await supabase.functions.invoke('dynamic-skill-test', {
         body: {
           action: 'next',
           sessionId,
           answer: userAnswer,
           questionNumber
-        }
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
 
       if (error) throw error;
