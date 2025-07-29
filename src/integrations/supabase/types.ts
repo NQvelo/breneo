@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      courses: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          duration: string
+          enrolled: boolean
+          id: string
+          image: string
+          level: string
+          popular: boolean
+          provider: string
+          required_skills: string[]
+          title: string
+          topics: string[]
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          duration: string
+          enrolled?: boolean
+          id?: string
+          image: string
+          level: string
+          popular?: boolean
+          provider: string
+          required_skills?: string[]
+          title: string
+          topics?: string[]
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          duration?: string
+          enrolled?: boolean
+          id?: string
+          image?: string
+          level?: string
+          popular?: boolean
+          provider?: string
+          required_skills?: string[]
+          title?: string
+          topics?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dynamic_skill_tests: {
         Row: {
           completed_at: string | null

@@ -12,7 +12,7 @@ import { calculateSkillScores, getTopSkills } from '@/utils/skillTestUtils';
 import { useQuery } from '@tanstack/react-query';
 
 interface Course {
-  id: number;
+  id: string;
   title: string;
   provider: string;
   category: string;
@@ -24,138 +24,37 @@ interface Course {
   image: string;
   description: string;
   topics: string[];
-  requiredSkills: string[];
+  required_skills: string[];
 }
-
-// Real courses data with skill requirements
-const REAL_COURSES: Course[] = [
-  {
-    id: 1,
-    title: 'UI/UX Design Fundamentals',
-    provider: 'DesignAcademy',
-    category: 'Design',
-    level: 'Beginner',
-    duration: '4 weeks',
-    match: 0,
-    enrolled: false,
-    popular: true,
-    image: 'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&auto=format&fit=crop&q=60',
-    description: 'Learn the core principles of UI/UX design and how to create engaging user experiences.',
-    topics: ['User Research', 'Wireframing', 'Prototyping', 'Usability Testing'],
-    requiredSkills: ['Designer', 'Creative'],
-  },
-  {
-    id: 2,
-    title: 'Digital Marketing Mastery',
-    provider: 'MarketingPro',
-    category: 'Marketing',
-    level: 'Intermediate',
-    duration: '6 weeks',
-    match: 0,
-    enrolled: false,
-    popular: false,
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=60',
-    description: 'Master digital marketing techniques and strategies across multiple platforms.',
-    topics: ['Social Media Marketing', 'SEO', 'Email Campaigns', 'Analytics'],
-    requiredSkills: ['Marketer', 'Analyst'],
-  },
-  {
-    id: 3,
-    title: 'React Frontend Development',
-    provider: 'CodeMasters',
-    category: 'Tech',
-    level: 'Intermediate',
-    duration: '8 weeks',
-    match: 0,
-    enrolled: false,
-    popular: true,
-    image: 'https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=800&auto=format&fit=crop&q=60',
-    description: 'Build modern web applications with React and related frontend technologies.',
-    topics: ['React Components', 'State Management', 'Hooks', 'Performance Optimization'],
-    requiredSkills: ['Developer', 'Technical'],
-  },
-  {
-    id: 4,
-    title: 'Business Strategy Fundamentals',
-    provider: 'BusinessSchool',
-    category: 'Business',
-    level: 'Beginner',
-    duration: '5 weeks',
-    match: 0,
-    enrolled: false,
-    popular: false,
-    image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&auto=format&fit=crop&q=60',
-    description: 'Learn the essentials of business strategy and management principles.',
-    topics: ['Strategic Planning', 'Market Analysis', 'Competitive Advantage', 'Business Models'],
-    requiredSkills: ['Project Manager', 'Analyst'],
-  },
-  {
-    id: 5,
-    title: 'Data Science Essentials',
-    provider: 'DataLearn',
-    category: 'Tech',
-    level: 'Advanced',
-    duration: '10 weeks',
-    match: 0,
-    enrolled: false,
-    popular: true,
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60',
-    description: 'Master the fundamentals of data science, from statistics to machine learning.',
-    topics: ['Python for Data', 'Statistical Analysis', 'Machine Learning', 'Data Visualization'],
-    requiredSkills: ['Developer', 'Analyst'],
-  },
-  {
-    id: 6,
-    title: 'Project Management Professional',
-    provider: 'PMI Institute',
-    category: 'Management',
-    level: 'Intermediate',
-    duration: '12 weeks',
-    match: 0,
-    enrolled: false,
-    popular: true,
-    image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&auto=format&fit=crop&q=60',
-    description: 'Comprehensive project management training covering methodologies and best practices.',
-    topics: ['Agile/Scrum', 'Risk Management', 'Resource Planning', 'Team Leadership'],
-    requiredSkills: ['Project Manager', 'Leader'],
-  },
-  {
-    id: 7,
-    title: 'Teaching and Training Skills',
-    provider: 'EduMasters',
-    category: 'Education',
-    level: 'Beginner',
-    duration: '6 weeks',
-    match: 0,
-    enrolled: false,
-    popular: false,
-    image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&auto=format&fit=crop&q=60',
-    description: 'Develop effective teaching and training skills for various learning environments.',
-    topics: ['Learning Psychology', 'Curriculum Design', 'Assessment Methods', 'Digital Tools'],
-    requiredSkills: ['Teacher', 'Communicator'],
-  },
-  {
-    id: 8,
-    title: 'Advanced JavaScript Programming',
-    provider: 'CodeMasters',
-    category: 'Tech',
-    level: 'Advanced',
-    duration: '10 weeks',
-    match: 0,
-    enrolled: false,
-    popular: true,
-    image: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=800&auto=format&fit=crop&q=60',
-    description: 'Deep dive into advanced JavaScript concepts and modern development practices.',
-    topics: ['ES6+ Features', 'Async Programming', 'Design Patterns', 'Performance Optimization'],
-    requiredSkills: ['Developer', 'Technical'],
-  },
-];
 
 const CoursesPage = () => {
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentTab, setCurrentTab] = useState('all');
-  const [coursesWithMatches, setCoursesWithMatches] = useState<Course[]>(REAL_COURSES);
+  const [coursesWithMatches, setCoursesWithMatches] = useState<Course[]>([]);
+
+  // Fetch courses from database
+  const { data: courses, isLoading: coursesLoading } = useQuery({
+    queryKey: ['courses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('courses')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching courses:', error);
+        return [];
+      }
+
+      return data?.map(course => ({
+        ...course,
+        match: 0, // Will be calculated based on user skills
+        topics: course.topics || [],
+        required_skills: course.required_skills || []
+      })) || [];
+    }
+  });
 
   // Fetch user's skill test results
   const { data: userSkills, isLoading: skillsLoading } = useQuery({
@@ -182,22 +81,27 @@ const CoursesPage = () => {
 
   // Calculate course matches based on user skills
   useEffect(() => {
-    if (!userSkills || userSkills.length === 0) {
-      setCoursesWithMatches(REAL_COURSES);
+    if (!courses || courses.length === 0) {
+      setCoursesWithMatches([]);
       return;
     }
 
-    const coursesWithCalculatedMatches = REAL_COURSES.map(course => {
+    if (!userSkills || userSkills.length === 0) {
+      setCoursesWithMatches(courses);
+      return;
+    }
+
+    const coursesWithCalculatedMatches = courses.map(course => {
       // Calculate match percentage based on skill overlap
-      const matchingSkills = course.requiredSkills.filter(skill => 
+      const matchingSkills = course.required_skills.filter(skill => 
         userSkills.some(userSkill => 
           userSkill.toLowerCase().includes(skill.toLowerCase()) ||
           skill.toLowerCase().includes(userSkill.toLowerCase())
         )
       );
       
-      const matchPercentage = course.requiredSkills.length > 0 
-        ? Math.round((matchingSkills.length / course.requiredSkills.length) * 100)
+      const matchPercentage = course.required_skills.length > 0 
+        ? Math.round((matchingSkills.length / course.required_skills.length) * 100)
         : 50; // Default match for courses without specific skill requirements
 
       return {
@@ -209,7 +113,7 @@ const CoursesPage = () => {
     // Sort by match percentage (highest first)
     const sortedCourses = coursesWithCalculatedMatches.sort((a, b) => b.match - a.match);
     setCoursesWithMatches(sortedCourses);
-  }, [userSkills]);
+  }, [userSkills, courses]);
   
   // Filter courses based on search and tab
   const filteredCourses = coursesWithMatches.filter(course => {
@@ -229,8 +133,8 @@ const CoursesPage = () => {
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-breneo-navy">Learning Paths</h1>
-          {skillsLoading && (
-            <div className="text-sm text-gray-500">Loading your skill profile...</div>
+          {(skillsLoading || coursesLoading) && (
+            <div className="text-sm text-gray-500">Loading courses...</div>
           )}
           {userSkills && userSkills.length > 0 && (
             <div className="text-sm text-gray-600">
@@ -259,7 +163,11 @@ const CoursesPage = () => {
         </Tabs>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCourses.length > 0 ? (
+          {coursesLoading ? (
+            <div className="col-span-full text-center py-12">
+              <div className="text-gray-500">Loading courses...</div>
+            </div>
+          ) : filteredCourses.length > 0 ? (
             filteredCourses.map(course => (
               <Card key={course.id} className="overflow-hidden">
                 <div className="h-40 overflow-hidden">
