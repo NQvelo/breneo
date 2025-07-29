@@ -29,6 +29,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Check if user needs onboarding after email verification
+        if (event === 'SIGNED_IN' && session?.user && !session.user.email_confirmed_at) {
+          // User just verified their email, redirect to interests
+          setTimeout(() => {
+            window.location.href = '/interests';
+          }, 1000);
+        }
       }
     );
 

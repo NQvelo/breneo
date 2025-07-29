@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 const INTERESTS = [{
   id: 1,
   name: 'Marketing',
@@ -42,10 +44,10 @@ const INTERESTS = [{
 }];
 export function InterestsSelection() {
   const [selected, setSelected] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const { user } = useAuth();
   const toggleInterest = (id: number) => {
     if (selected.includes(id)) {
       setSelected(selected.filter(item => item !== id));
@@ -53,7 +55,7 @@ export function InterestsSelection() {
       setSelected([...selected, id]);
     }
   };
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selected.length === 0) {
       toast({
         title: "Please select at least one area of interest",
@@ -61,11 +63,52 @@ export function InterestsSelection() {
       });
       return;
     }
-    toast({
-      title: "Interests saved!",
-      description: "Your personalized experience is ready."
-    });
-    navigate('/dashboard');
+
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to save your interests.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Convert selected IDs to interest names
+      const selectedInterests = selected.map(id => 
+        INTERESTS.find(interest => interest.id === id)?.name
+      ).filter(Boolean) as string[];
+
+      // Update user profile with interests and mark onboarding as completed
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          interests: selectedInterests,
+          onboarding_completed: true
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Interests saved!",
+        description: "Your personalized experience is ready."
+      });
+      
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast({
+        title: "Failed to save interests",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
   return <div className="max-w-3xl mx-auto p-6">
       <div className="text-center mb-8">
@@ -84,8 +127,12 @@ export function InterestsSelection() {
       </div>
 
       <div className="mt-8 flex justify-end">
-        <Button onClick={handleContinue} className="bg-breneo-blue hover:bg-breneo-blue/90">
-          Continue
+        <Button 
+          onClick={handleContinue} 
+          className="bg-breneo-blue hover:bg-breneo-blue/90"
+          disabled={loading}
+        >
+          {loading ? 'Saving...' : 'Continue'}
         </Button>
       </div>
     </div>;
