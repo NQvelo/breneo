@@ -31,6 +31,14 @@ serve(async (req) => {
       throw new Error('User not authenticated');
     }
 
+    // Create service role client for database operations
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const serviceClient = createClient(
+      'https://kwvpfetgerukuglqeuzl.supabase.co',
+      serviceRoleKey!,
+      { auth: { persistSession: false } }
+    );
+
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY is not set');
@@ -38,7 +46,7 @@ serve(async (req) => {
 
     if (action === 'start') {
       // Get the first question from the database
-      const { data: questions, error: questionsError } = await supabaseClient
+      const { data: questions, error: questionsError } = await serviceClient
         .from('dynamictestquestions')
         .select('*')
         .eq('isactive', true)
@@ -51,7 +59,7 @@ serve(async (req) => {
 
       const firstQuestion = questions[0];
       
-      const { data: testSession, error } = await supabaseClient
+      const { data: testSession, error } = await serviceClient
         .from('dynamic_skill_tests')
         .insert({
           user_id: user.id,
@@ -80,7 +88,7 @@ serve(async (req) => {
 
     if (action === 'next') {
       // Get current session
-      const { data: session, error: sessionError } = await supabaseClient
+      const { data: session, error: sessionError } = await serviceClient
         .from('dynamic_skill_tests')
         .select('*')
         .eq('id', sessionId)
@@ -136,7 +144,7 @@ ${conversationHistory}`;
         const finalSummary = summaryData.choices[0].message.content;
 
         // Update session with completion
-        await supabaseClient
+        await serviceClient
           .from('dynamic_skill_tests')
           .update({
             session_data: {
@@ -166,7 +174,7 @@ ${conversationHistory}`;
       const nextQuestionObj = availableQuestions[nextQuestionIndex];
       questions.push(nextQuestionObj);
       
-      await supabaseClient
+      await serviceClient
         .from('dynamic_skill_tests')
         .update({
           session_data: {
