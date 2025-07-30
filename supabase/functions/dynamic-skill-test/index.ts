@@ -37,8 +37,19 @@ serve(async (req) => {
     }
 
     if (action === 'start') {
-      // Start a new test session
-      const firstQuestion = "To get started, what's your current role or the type of work you're interested in? Please describe your background and what skills you'd like to develop.";
+      // Get the first question from the database
+      const { data: questions, error: questionsError } = await supabaseClient
+        .from('dynamictestquestions')
+        .select('*')
+        .eq('isactive', true)
+        .order('order', { ascending: true });
+
+      if (questionsError) throw questionsError;
+      if (!questions || questions.length === 0) {
+        throw new Error('No active questions available');
+      }
+
+      const firstQuestion = questions[0];
       
       const { data: testSession, error } = await supabaseClient
         .from('dynamic_skill_tests')
@@ -48,7 +59,8 @@ serve(async (req) => {
             questions: [firstQuestion],
             answers: [],
             current_question: 1,
-            status: 'active'
+            status: 'active',
+            available_questions: questions
           }
         })
         .select()
@@ -58,8 +70,9 @@ serve(async (req) => {
 
       return new Response(JSON.stringify({
         sessionId: testSession.id,
-        question: firstQuestion,
-        questionNumber: 1
+        question: firstQuestion.questiontext,
+        questionNumber: 1,
+        options: firstQuestion.options || null
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -79,15 +92,17 @@ serve(async (req) => {
       const sessionData = session.session_data;
       const questions = sessionData.questions || [];
       const answers = sessionData.answers || [];
+      const availableQuestions = sessionData.available_questions || [];
 
       // Add the new answer
       answers.push(answer);
 
-      if (questionNumber >= 5) {
-        // Generate final summary
-        const conversationHistory = questions.map((q, i) => 
-          `Q${i + 1}: ${q}\nA${i + 1}: ${answers[i] || ''}`
-        ).join('\n\n');
+      if (questionNumber >= 5 || questionNumber >= availableQuestions.length) {
+        // Generate final summary using OpenAI
+        const conversationHistory = questions.map((q, i) => {
+          const questionText = typeof q === 'string' ? q : q.questiontext;
+          return `Q${i + 1}: ${questionText}\nA${i + 1}: ${answers[i] || ''}`;
+        }).join('\n\n');
 
         const summaryPrompt = `Based on this skill assessment conversation, provide a comprehensive analysis of the user's strengths and suggested career paths. Format your response as JSON with this structure:
 {
@@ -108,7 +123,7 @@ ${conversationHistory}`;
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'gpt-4',
+            model: 'gpt-4o-mini',
             messages: [
               { role: 'system', content: 'You are a career assessment expert. Provide thoughtful, specific analysis based on the user responses.' },
               { role: 'user', content: summaryPrompt }
@@ -142,45 +157,14 @@ ${conversationHistory}`;
         });
       }
 
-      // Generate next question based on conversation
-      const conversationHistory = questions.map((q, i) => 
-        `Q${i + 1}: ${q}\nA${i + 1}: ${answers[i] || ''}`
-      ).join('\n\n');
+      // Get the next question from the available questions
+      const nextQuestionIndex = questionNumber; // Since we start from 0-indexed
+      if (nextQuestionIndex >= availableQuestions.length) {
+        throw new Error('No more questions available');
+      }
 
-      const nextQuestionPrompt = `You are conducting a dynamic skill assessment. Based on the conversation below, generate the next question (question ${questionNumber + 1} of 5) that will help assess the user's skills and career potential. 
-
-Make the question:
-- Specific and actionable
-- Related to their previous answers
-- Designed to reveal skills, experience, or potential
-- Progressive (build on previous questions)
-
-Return only the question text, no additional formatting.
-
-Previous conversation:
-${conversationHistory}`;
-
-      const questionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4',
-          messages: [
-            { role: 'system', content: 'You are a career assessment expert creating personalized questions.' },
-            { role: 'user', content: nextQuestionPrompt }
-          ],
-          temperature: 0.8,
-        }),
-      });
-
-      const questionData = await questionResponse.json();
-      const nextQuestion = questionData.choices[0].message.content.trim();
-
-      // Update session with new question and answer
-      questions.push(nextQuestion);
+      const nextQuestionObj = availableQuestions[nextQuestionIndex];
+      questions.push(nextQuestionObj);
       
       await supabaseClient
         .from('dynamic_skill_tests')
@@ -195,8 +179,9 @@ ${conversationHistory}`;
         .eq('id', sessionId);
 
       return new Response(JSON.stringify({
-        question: nextQuestion,
-        questionNumber: questionNumber + 1
+        question: nextQuestionObj.questiontext,
+        questionNumber: questionNumber + 1,
+        options: nextQuestionObj.options || null
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
