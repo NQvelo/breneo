@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import AuthPage from "./pages/AuthPage";
 import InterestsPage from "./pages/InterestsPage";
 import SkillTestPage from "./pages/SkillTestPage";
+import SkillPathPage from "./pages/SkillPathPage";
 import JobsPage from "./pages/JobsPage";
 import CoursesPage from "./pages/CoursesPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -41,6 +42,11 @@ const App = () => (
             <Route path="/skill-test" element={
               <ProtectedRoute>
                 <SkillTestPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/skill-path" element={
+              <ProtectedRoute>
+                <SkillPathPage />
               </ProtectedRoute>
             } />
             <Route path="/jobs" element={

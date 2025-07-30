@@ -263,6 +263,12 @@ export function DynamicSkillTest() {
 
           <div className="flex gap-4 justify-center">
             <Button 
+              onClick={() => navigate('/skill-path')}
+              className="bg-breneo-blue hover:bg-breneo-blue/90"
+            >
+              View Your Skill Path
+            </Button>
+            <Button 
               onClick={restartTest}
               variant="outline"
             >
@@ -270,7 +276,7 @@ export function DynamicSkillTest() {
             </Button>
             <Button 
               onClick={() => navigate('/dashboard')}
-              className="bg-breneo-blue hover:bg-breneo-blue/90"
+              variant="outline"
             >
               Back to Dashboard
             </Button>
