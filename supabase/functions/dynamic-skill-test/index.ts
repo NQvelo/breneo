@@ -16,15 +16,20 @@ serve(async (req) => {
   try {
     const { action, sessionId, answer, questionNumber } = await req.json();
     
-    const authHeader = req.headers.get('Authorization')!;
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) throw new Error('No authorization header');
+    
     const supabaseClient = createClient(
       'https://kwvpfetgerukuglqeuzl.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3dnBmZXRnZXJ1a3VnbHFldXpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyNDYzNjEsImV4cCI6MjA2NTgyMjM2MX0.oQNRxz5hNqp_YVkIJ0KOtVSgAksQ0km6iESqiWI8wHw',
-      { auth: { persistSession: false }, global: { headers: { Authorization: authHeader } } }
+      { auth: { persistSession: false } }
     );
 
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(authHeader.replace('Bearer ', ''));
+    if (authError || !user) {
+      console.error('Authentication error:', authError);
+      throw new Error('User not authenticated');
+    }
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
