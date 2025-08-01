@@ -106,11 +106,15 @@ serve(async (req) => {
       answers.push(answer);
 
       if (questionNumber >= 5 || questionNumber >= availableQuestions.length) {
+        console.log('Starting test completion process');
+        
         // Generate final summary using OpenAI
         const conversationHistory = questions.map((q, i) => {
           const questionText = typeof q === 'string' ? q : q.questiontext;
           return `Q${i + 1}: ${questionText}\nA${i + 1}: ${answers[i] || ''}`;
         }).join('\n\n');
+
+        console.log('Conversation history created:', conversationHistory);
 
         const summaryPrompt = `Based on this skill assessment conversation, provide a comprehensive analysis of the user's strengths and suggested career paths. Format your response as JSON with this structure:
 {
@@ -124,6 +128,8 @@ serve(async (req) => {
 Conversation:
 ${conversationHistory}`;
 
+        console.log('About to call OpenAI API');
+        
         const summaryResponse = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -140,11 +146,24 @@ ${conversationHistory}`;
           }),
         });
 
+        console.log('OpenAI response status:', summaryResponse.status);
+        
+        if (!summaryResponse.ok) {
+          const errorText = await summaryResponse.text();
+          console.error('OpenAI API error:', errorText);
+          throw new Error(`OpenAI API error: ${summaryResponse.status} - ${errorText}`);
+        }
+
         const summaryData = await summaryResponse.json();
+        console.log('OpenAI response data:', summaryData);
+        
         const finalSummary = summaryData.choices[0].message.content;
+        console.log('Final summary extracted:', finalSummary);
 
         // Update session with completion
-        await serviceClient
+        console.log('About to update database with completion');
+        
+        const { error: updateError } = await serviceClient
           .from('dynamic_skill_tests')
           .update({
             session_data: {
@@ -156,6 +175,13 @@ ${conversationHistory}`;
             completed_at: new Date().toISOString()
           })
           .eq('id', sessionId);
+
+        if (updateError) {
+          console.error('Database update error:', updateError);
+          throw new Error(`Database update failed: ${updateError.message}`);
+        }
+
+        console.log('Test completion successful');
 
         return new Response(JSON.stringify({
           completed: true,
