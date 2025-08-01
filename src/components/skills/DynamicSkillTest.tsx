@@ -322,12 +322,12 @@ export function DynamicSkillTest() {
           >
             {questionOptions.map((option, index) => (
               <div key={index} className="flex items-center space-x-2 p-3 border rounded-lg hover:bg-gray-50">
-                <RadioGroupItem value={option.text || option} id={`option-${index}`} />
+                <RadioGroupItem value={option.label || option} id={`option-${index}`} />
                 <Label 
                   htmlFor={`option-${index}`} 
                   className="flex-1 cursor-pointer leading-relaxed"
                 >
-                  {option.text || option}
+                  {option.label || (typeof option === 'string' ? option : JSON.stringify(option))}
                 </Label>
               </div>
             ))}
