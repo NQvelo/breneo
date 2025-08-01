@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronDown, Bell, User, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -16,6 +16,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ sidebarCollapsed = false }: DashboardHeaderProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   
   const getPageTitle = () => {
@@ -75,7 +76,7 @@ export function DashboardHeader({ sidebarCollapsed = false }: DashboardHeaderPro
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 p-2">
-              <DropdownMenuItem className="py-3 px-3">
+              <DropdownMenuItem onClick={() => navigate('/profile')} className="py-3 px-3">
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
