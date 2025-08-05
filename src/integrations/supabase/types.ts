@@ -14,8 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      academy_profiles: {
+        Row: {
+          academy_name: string
+          contact_email: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_verified: boolean | null
+          logo_url: string | null
+          updated_at: string | null
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          academy_name: string
+          contact_email?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_verified?: boolean | null
+          logo_url?: string | null
+          updated_at?: string | null
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          academy_name?: string
+          contact_email?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_verified?: boolean | null
+          logo_url?: string | null
+          updated_at?: string | null
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
+          academy_id: string | null
           category: string
           created_at: string
           description: string
@@ -23,6 +63,7 @@ export type Database = {
           enrolled: boolean
           id: string
           image: string
+          is_academy_course: boolean | null
           level: string
           popular: boolean
           provider: string
@@ -32,6 +73,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          academy_id?: string | null
           category: string
           created_at?: string
           description: string
@@ -39,6 +81,7 @@ export type Database = {
           enrolled?: boolean
           id?: string
           image: string
+          is_academy_course?: boolean | null
           level: string
           popular?: boolean
           provider: string
@@ -48,6 +91,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          academy_id?: string | null
           category?: string
           created_at?: string
           description?: string
@@ -55,6 +99,7 @@ export type Database = {
           enrolled?: boolean
           id?: string
           image?: string
+          is_academy_course?: boolean | null
           level?: string
           popular?: boolean
           provider?: string
@@ -63,7 +108,15 @@ export type Database = {
           topics?: string[]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "courses_academy_id_fkey"
+            columns: ["academy_id"]
+            isOneToOne: false
+            referencedRelation: "academy_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       dynamic_skill_tests: {
         Row: {
@@ -161,6 +214,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       usertestanswers: {
         Row: {
           answeredat: string
@@ -193,10 +267,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user" | "academy"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -323,6 +403,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user", "academy"],
+    },
   },
 } as const
