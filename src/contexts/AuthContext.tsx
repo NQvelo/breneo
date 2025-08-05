@@ -25,17 +25,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         console.log('Auth state changed:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Check if user needs onboarding after email verification
-        if (event === 'SIGNED_IN' && session?.user && !session.user.email_confirmed_at) {
-          // User just verified their email, redirect to interests
-          setTimeout(() => {
-            window.location.href = '/interests';
+        // Check user role after sign in to redirect appropriately
+        if (event === 'SIGNED_IN' && session?.user) {
+          setTimeout(async () => {
+            try {
+              const { data: userRole } = await supabase
+                .from('user_roles')
+                .select('role')
+                .eq('user_id', session.user.id)
+                .single();
+              
+              if (userRole?.role === 'academy') {
+                window.location.href = '/academy-dashboard';
+              } else if (!session.user.email_confirmed_at) {
+                // Regular user just verified their email, redirect to interests
+                window.location.href = '/interests';
+              }
+            } catch (error) {
+              console.log('Error checking user role:', error);
+            }
           }, 1000);
         }
       }
