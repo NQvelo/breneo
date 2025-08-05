@@ -9,6 +9,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
+  signUpAcademy: (email: string, password: string, academyData: any) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
@@ -122,6 +123,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signUpAcademy = async (email: string, password: string, academyData: any) => {
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            academy_name: academyData.academyName,
+            description: academyData.description,
+            website_url: academyData.websiteUrl,
+            contact_email: academyData.contactEmail
+          }
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Academy registration failed",
+          description: error.message,
+          variant: "destructive"
+        });
+        return { error };
+      }
+
+      toast({
+        title: "Academy registered!",
+        description: "Please check your email to verify your account."
+      });
+
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: "Academy registration failed",
+        description: error.message,
+        variant: "destructive"
+      });
+      return { error };
+    }
+  };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -143,6 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     session,
     loading,
     signUp,
+    signUpAcademy,
     signIn,
     signOut
   };

@@ -15,6 +15,7 @@ import SkillPathPage from "./pages/SkillPathPage";
 import JobsPage from "./pages/JobsPage";
 import CoursesPage from "./pages/CoursesPage";
 import ProfilePage from "./pages/ProfilePage";
+import AcademyDashboard from "./pages/AcademyDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,11 @@ const App = () => (
             <Route path="/profile" element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/academy-dashboard" element={
+              <ProtectedRoute>
+                <AcademyDashboard />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
