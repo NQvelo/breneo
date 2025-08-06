@@ -65,11 +65,6 @@ const App = () => (
                 <ProfilePage />
               </ProtectedRoute>
             } />
-            <Route path="/academy-dashboard" element={
-              <ProtectedRoute>
-                <AcademyDashboard />
-              </ProtectedRoute>
-            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

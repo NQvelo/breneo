@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Bell } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { calculateSkillScores } from '@/utils/skillTestUtils';
+import AcademyDashboard from './AcademyDashboard';
 
 interface Job {
   id: string;
@@ -38,7 +39,45 @@ const fetchJobs = async () => {
 };
 
 const Dashboard = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
+  
+  // Check user role to determine which dashboard to show
+  const { data: userRole, isLoading: roleLoading } = useQuery({
+    queryKey: ['user-role', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+      
+      return data?.role || 'user';
+    },
+    enabled: !!user,
+  });
+
+  // Show loading state while checking role
+  if (roleLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-breneo-blue mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Render academy dashboard for academy users
+  if (userRole === 'academy') {
+    return <AcademyDashboard />;
+  }
+  
+  // Regular user dashboard logic below
   
   // Mock user data - using real user data where available
   const userData = {
