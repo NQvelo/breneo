@@ -58,34 +58,13 @@ const Dashboard = () => {
     enabled: !!user,
   });
 
-  // Show loading state while checking role
-  if (roleLoading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-breneo-blue mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  // Render academy dashboard for academy users
-  if (userRole === 'academy') {
-    return <AcademyDashboard />;
-  }
-  
-  // Regular user dashboard logic below
-  
   // Mock user data - using real user data where available
   const userData = {
     name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User',
     skillTestTaken: false
   };
 
-  // Fetch user's skill scores
+  // Fetch user's skill scores - always call this hook
   const { data: userSkillScores = {}, isLoading: skillsLoading } = useQuery({
     queryKey: ['user-skills', user?.id],
     queryFn: async () => {
@@ -107,16 +86,36 @@ const Dashboard = () => {
         return {};
       }
     },
-    enabled: !!user,
+    enabled: !!user && userRole !== 'academy',
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Fetch real jobs
+  // Fetch real jobs - always call this hook
   const { data: jobs = [], isLoading: jobsLoading, error: jobsError } = useQuery({
     queryKey: ['dashboard-jobs'],
     queryFn: fetchJobs,
+    enabled: userRole !== 'academy',
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Show loading state while checking role
+  if (roleLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-breneo-blue mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Render academy dashboard for academy users
+  if (userRole === 'academy') {
+    return <AcademyDashboard />;
+  }
 
   // Calculate job match percentage based on user's skills
   const calculateJobMatch = (jobTitle: string, jobDescription: string) => {
