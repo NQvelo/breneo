@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -188,7 +189,12 @@ const CoursesPage = () => {
                   </div>
                   
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-gray-500 text-sm">{course.provider}</span>
+                    <Link 
+                      to={`/academy/${encodeURIComponent(course.provider)}`}
+                      className="text-gray-500 text-sm hover:text-breneo-blue hover:underline cursor-pointer"
+                    >
+                      {course.provider}
+                    </Link>
                     <span className="text-gray-400">•</span>
                     <span className="text-gray-500 text-sm">{course.level}</span>
                     <span className="text-gray-400">•</span>

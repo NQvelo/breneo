@@ -16,6 +16,7 @@ import JobsPage from "./pages/JobsPage";
 import CoursesPage from "./pages/CoursesPage";
 import ProfilePage from "./pages/ProfilePage";
 import AcademyDashboard from "./pages/AcademyDashboard";
+import AcademyPage from "./pages/AcademyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,11 @@ const App = () => (
             <Route path="/profile" element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/academy/:academyName" element={
+              <ProtectedRoute>
+                <AcademyPage />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
