@@ -16,7 +16,7 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
   const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(!!initialRole);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [isAcademySignUp, setIsAcademySignUp] = useState(initialRole === 'academy');
   const [academyName, setAcademyName] = useState('');
   const [academyDescription, setAcademyDescription] = useState('');
