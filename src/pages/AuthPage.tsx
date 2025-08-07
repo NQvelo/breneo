@@ -1,22 +1,16 @@
-
 import React, { useState } from 'react';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { Card, CardContent } from '@/components/ui/card';
 import { GraduationCap, Building2 } from 'lucide-react';
-
 const AuthPage = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'academy' | null>(null);
-
   const handleRoleSelection = (role: 'student' | 'academy') => {
     setSelectedRole(role);
   };
-
   const handleBack = () => {
     setSelectedRole(null);
   };
-
-  return (
-    <div className="min-h-screen bg-breneo-lightgray flex flex-col">
+  return <div className="min-h-screen bg-breneo-lightgray flex flex-col">
       {/* Simple header */}
       <header className="bg-white py-3 px-4 md:py-4 md:px-6 shadow-sm">
         <div className="container mx-auto">
@@ -29,8 +23,7 @@ const AuthPage = () => {
       {/* Main content */}
       <main className="flex-grow flex items-center justify-center py-6 px-3 md:py-12 md:px-4">
         <div className="w-full max-w-md">
-          {!selectedRole ? (
-            <div className="space-y-6">
+          {!selectedRole ? <div className="space-y-6">
               <div className="text-center mb-8">
                 <h1 className="text-3xl font-semibold text-foreground mb-2">
                   Welcome to Breneo
@@ -41,10 +34,7 @@ const AuthPage = () => {
               </div>
 
               <div className="space-y-4">
-                <Card 
-                  className="cursor-pointer hover:shadow-md transition-shadow border-2 hover:border-primary/20"
-                  onClick={() => handleRoleSelection('student')}
-                >
+                <Card className="cursor-pointer hover:shadow-md transition-shadow border-2 hover:border-primary/20" onClick={() => handleRoleSelection('student')}>
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
@@ -53,9 +43,7 @@ const AuthPage = () => {
                         </div>
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-foreground mb-2">
-                          I'm a Student
-                        </h3>
+                        <h3 className="text-lg font-semibold text-foreground mb-2">Student Registration</h3>
                         <p className="text-sm text-muted-foreground">
                           Join courses, learn new skills, and advance your career with our comprehensive learning platform
                         </p>
@@ -67,10 +55,7 @@ const AuthPage = () => {
                   </CardContent>
                 </Card>
 
-                <Card 
-                  className="cursor-pointer hover:shadow-md transition-shadow border-2 hover:border-primary/20"
-                  onClick={() => handleRoleSelection('academy')}
-                >
+                <Card className="cursor-pointer hover:shadow-md transition-shadow border-2 hover:border-primary/20" onClick={() => handleRoleSelection('academy')}>
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
@@ -79,9 +64,7 @@ const AuthPage = () => {
                         </div>
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-foreground mb-2">
-                          I'm creating an Academy
-                        </h3>
+                        <h3 className="text-lg font-semibold text-foreground mb-2">Academy Registration</h3>
                         <p className="text-sm text-muted-foreground">
                           Create and manage courses, track student progress, and build your educational platform
                         </p>
@@ -93,20 +76,14 @@ const AuthPage = () => {
                   </CardContent>
                 </Card>
               </div>
-            </div>
-          ) : (
-            <div>
+            </div> : <div>
               <div className="mb-4">
-                <button
-                  onClick={handleBack}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
+                <button onClick={handleBack} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   ← Back to role selection
                 </button>
               </div>
               <AuthForm initialRole={selectedRole} />
-            </div>
-          )}
+            </div>}
         </div>
       </main>
 
@@ -118,8 +95,6 @@ const AuthPage = () => {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default AuthPage;
