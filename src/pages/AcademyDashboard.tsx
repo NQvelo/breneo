@@ -60,9 +60,14 @@ const AcademyDashboard = () => {
   useEffect(() => {
     if (user) {
       fetchAcademyData();
-      fetchCourses();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (academyProfile) {
+      fetchCourses();
+    }
+  }, [academyProfile]);
 
   const fetchAcademyData = async () => {
     try {
