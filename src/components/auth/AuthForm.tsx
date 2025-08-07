@@ -5,15 +5,19 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff } from 'lucide-react';
 
-export function AuthForm() {
+interface AuthFormProps {
+  initialRole?: 'student' | 'academy';
+}
+
+export function AuthForm({ initialRole }: AuthFormProps = {}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [isAcademySignUp, setIsAcademySignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(!!initialRole);
+  const [isAcademySignUp, setIsAcademySignUp] = useState(initialRole === 'academy');
   const [academyName, setAcademyName] = useState('');
   const [academyDescription, setAcademyDescription] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
