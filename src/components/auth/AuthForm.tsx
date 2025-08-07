@@ -158,34 +158,6 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
         </form>
       ) : (
         <div className="space-y-6">
-          {/* Toggle between user and academy signup */}
-          <div className="flex space-x-2 p-1 bg-muted rounded-lg">
-            <button
-              type="button"
-              onClick={() => setIsAcademySignUp(false)}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                !isAcademySignUp 
-                  ? 'bg-background text-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              disabled={loading}
-            >
-              Student
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsAcademySignUp(true)}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                isAcademySignUp 
-                  ? 'bg-background text-foreground shadow-sm' 
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              disabled={loading}
-            >
-              Academy
-            </button>
-          </div>
-
           {!isAcademySignUp ? (
             <form onSubmit={handleSignUp} className="space-y-6">
               <div className="space-y-2">
