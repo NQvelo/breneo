@@ -11,6 +11,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signUpAcademy: (email: string, password: string, academyData: any) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
+  resendConfirmation: (email: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -66,6 +67,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
+        const msg = (error.message || '').toLowerCase();
+        if (msg.includes('already') || msg.includes('registered') || msg.includes('exists')) {
+          const { error: resendError } = await supabase.auth.resend({ type: 'signup', email });
+          if (resendError) {
+            toast({ title: 'Sign up failed', description: resendError.message, variant: 'destructive' });
+            return { error: resendError };
+          }
+          toast({ title: 'Email already registered', description: 'We resent the verification link to your email.' });
+          return { error: null };
+        }
         toast({
           title: "Sign up failed",
           description: error.message,
@@ -122,6 +133,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const resendConfirmation = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      });
+      if (error) {
+        toast({ title: 'Resend failed', description: error.message, variant: 'destructive' });
+        return { error };
+      }
+      toast({ title: 'Verification email resent', description: 'Please check your inbox.' });
+      return { error: null };
+    } catch (error: any) {
+      toast({ title: 'Resend failed', description: error.message, variant: 'destructive' });
+      return { error };
+    }
+  };
+  
   const signUpAcademy = async (email: string, password: string, academyData: any) => {
     try {
       const redirectUrl = `${window.location.origin}/email-confirmed`;
@@ -141,6 +170,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
+        const msg = (error.message || '').toLowerCase();
+        if (msg.includes('already') || msg.includes('registered') || msg.includes('exists')) {
+          const { error: resendError } = await supabase.auth.resend({ type: 'signup', email });
+          if (resendError) {
+            toast({ title: 'Academy registration failed', description: resendError.message, variant: 'destructive' });
+            return { error: resendError };
+          }
+          toast({ title: 'Email already registered', description: 'We resent the verification link to your email.' });
+          return { error: null };
+        }
         toast({
           title: "Academy registration failed",
           description: error.message,
@@ -188,6 +227,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signUpAcademy,
     signIn,
+    resendConfirmation,
     signOut
   };
 

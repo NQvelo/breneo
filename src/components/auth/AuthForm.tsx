@@ -16,6 +16,7 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
   const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [isAcademySignUp, setIsAcademySignUp] = useState(initialRole === 'academy');
   const [academyName, setAcademyName] = useState('');
@@ -24,7 +25,7 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
   const [contactEmail, setContactEmail] = useState('');
   const [academyStep, setAcademyStep] = useState<'name' | 'details'>('name');
   const navigate = useNavigate();
-  const { signIn, signUp, signUpAcademy } = useAuth();
+  const { signIn, signUp, signUpAcademy, resendConfirmation } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +81,13 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
     }
     
     setLoading(false);
+  };
+
+  const handleResend = async () => {
+    if (!email) return;
+    setResending(true);
+    await resendConfirmation(email);
+    setResending(false);
   };
 
   return (
@@ -153,6 +161,17 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
               className="text-breneo-blue hover:underline font-medium"
             >
               Sign up
+            </button>
+          </div>
+
+          <div className="text-center pt-2">
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={!email || resending}
+              className="text-sm text-breneo-blue hover:underline font-medium disabled:opacity-50"
+            >
+              {resending ? 'Resending...' : 'Resend verification email'}
             </button>
           </div>
         </form>
