@@ -18,6 +18,7 @@ import ProfilePage from "./pages/ProfilePage";
 import AcademyDashboard from "./pages/AcademyDashboard";
 import AcademyPage from "./pages/AcademyPage";
 import NotFound from "./pages/NotFound";
+import EmailConfirmed from "./pages/EmailConfirmed";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<AuthPage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/email-confirmed" element={<EmailConfirmed />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
