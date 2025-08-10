@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { Card, CardContent } from '@/components/ui/card';
 import { GraduationCap, Building2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 const AuthPage = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'academy' | null>(null);
+  const navigate = useNavigate();
   const handleRoleSelection = (role: 'student' | 'academy') => {
     setSelectedRole(role);
   };
@@ -82,7 +84,7 @@ const AuthPage = () => {
                   ← Back to role selection
                 </button>
               </div>
-              <AuthForm initialRole={selectedRole} />
+              <AuthForm initialRole={selectedRole} initialIsSignUp={true} onRequestSignIn={() => navigate('/auth/login')} />
             </div>}
         </div>
       </main>

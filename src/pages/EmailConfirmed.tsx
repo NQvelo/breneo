@@ -45,7 +45,7 @@ const EmailConfirmed: React.FC = () => {
           <CardContent className="pb-8 pt-2">
             <div className="mt-6">
               <Button asChild className="w-full">
-                <Link to="/auth" aria-label="Go to login page">
+                <Link to="/auth/login" aria-label="Go to login page">
                   Go to Login
                 </Link>
               </Button>

@@ -52,7 +52,7 @@ const SkillPathPage = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate('/auth');
+      navigate('/auth/login');
       return;
     }
     loadSkillData();

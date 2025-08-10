@@ -7,9 +7,12 @@ import { Eye, EyeOff, Building2 } from 'lucide-react';
 
 interface AuthFormProps {
   initialRole?: 'student' | 'academy';
+  initialIsSignUp?: boolean;
+  onRequestSignUp?: () => void;
+  onRequestSignIn?: () => void;
 }
 
-export function AuthForm({ initialRole }: AuthFormProps = {}) {
+export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequestSignIn }: AuthFormProps = {}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -17,7 +20,7 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(initialIsSignUp ?? false);
   const [isAcademySignUp, setIsAcademySignUp] = useState(initialRole === 'academy');
   const [academyName, setAcademyName] = useState('');
   const [academyDescription, setAcademyDescription] = useState('');
@@ -157,7 +160,7 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
             <span className="text-muted-foreground">Don't have an account? </span>
             <button
               type="button"
-              onClick={() => setIsSignUp(true)}
+              onClick={() => (onRequestSignUp ? onRequestSignUp() : setIsSignUp(true))}
               className="text-breneo-blue hover:underline font-medium"
             >
               Sign up
@@ -266,7 +269,7 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
                 <span className="text-muted-foreground">Already have an account? </span>
                 <button
                   type="button"
-                  onClick={() => setIsSignUp(false)}
+                  onClick={() => (onRequestSignIn ? onRequestSignIn() : setIsSignUp(false))}
                   className="text-breneo-blue hover:underline font-medium"
                 >
                   Sign in
@@ -342,7 +345,7 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
                     <span className="text-muted-foreground">Already have an account? </span>
                     <button
                       type="button"
-                      onClick={() => setIsSignUp(false)}
+                       onClick={() => (onRequestSignIn ? onRequestSignIn() : setIsSignUp(false))}
                       className="text-breneo-blue hover:underline font-medium"
                     >
                       Sign in
@@ -456,7 +459,7 @@ export function AuthForm({ initialRole }: AuthFormProps = {}) {
                     <span className="text-muted-foreground">Already have an account? </span>
                     <button
                       type="button"
-                      onClick={() => setIsSignUp(false)}
+                       onClick={() => (onRequestSignIn ? onRequestSignIn() : setIsSignUp(false))}
                       className="text-breneo-blue hover:underline font-medium"
                     >
                       Sign in

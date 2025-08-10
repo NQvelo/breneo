@@ -19,6 +19,7 @@ import AcademyDashboard from "./pages/AcademyDashboard";
 import AcademyPage from "./pages/AcademyPage";
 import NotFound from "./pages/NotFound";
 import EmailConfirmed from "./pages/EmailConfirmed";
+import LoginPage from "./pages/LoginPage";
 
 const queryClient = new QueryClient();
 
@@ -30,8 +31,10 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<AuthPage />} />
-            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/auth/login" element={<LoginPage />} />
+            <Route path="/auth/signup" element={<AuthPage />} />
+            <Route path="/auth" element={<Navigate to="/auth/login" replace />} />
             <Route path="/email-confirmed" element={<EmailConfirmed />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>

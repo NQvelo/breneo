@@ -36,10 +36,10 @@ const LandingPage = () => {
             <a href="#features" className="text-gray-600 hover:text-breneo-navy transition-colors">Features</a>
             <a href="#how-it-works" className="text-gray-600 hover:text-breneo-navy transition-colors">How It Works</a>
             <Button asChild variant="ghost">
-              <Link to="/auth">Sign In</Link>
+              <Link to="/auth/login">Sign In</Link>
             </Button>
             <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90">
-              <Link to="/auth">Get Started</Link>
+              <Link to="/auth/login">Get Started</Link>
             </Button>
           </div>
           <div className="md:hidden">
@@ -63,7 +63,7 @@ const LandingPage = () => {
               </p>
               <div className="space-x-4">
                 <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90 text-white px-6 py-2.5">
-                  <Link to="/auth">Start Your Journey</Link>
+                  <Link to="/auth/login">Start Your Journey</Link>
                 </Button>
                 <Button variant="outline">
                   Learn More
@@ -197,7 +197,7 @@ const LandingPage = () => {
 
           <div className="text-center mt-12">
             <Button asChild className="bg-breneo-blue hover:bg-breneo-blue/90">
-              <Link to="/auth">Get Started Now</Link>
+              <Link to="/auth/login">Get Started Now</Link>
             </Button>
           </div>
         </div>
@@ -265,7 +265,7 @@ const LandingPage = () => {
               Join thousands of professionals who are discovering their true potential with Breneo's AI-powered platform.
             </p>
             <Button asChild size="lg" className="bg-breneo-blue hover:bg-breneo-blue/90">
-              <Link to="/auth">Start Your Free Assessment</Link>
+              <Link to="/auth/login">Start Your Free Assessment</Link>
             </Button>
           </div>
         </div>
