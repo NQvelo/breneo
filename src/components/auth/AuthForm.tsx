@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, Building2 } from 'lucide-react';
 
@@ -16,7 +18,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState<string | undefined>('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
@@ -218,13 +220,15 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                 <label htmlFor="phone" className="text-sm font-medium text-foreground">
                   Phone Number
                 </label>
-                <Input 
-                  id="phone" 
-                  type="tel" 
-                  placeholder="Enter your phone number" 
-                  value={phone} 
-                  onChange={e => setPhone(e.target.value)} 
-                  required 
+                <PhoneInput
+                  id="phone"
+                  placeholder="Enter your phone number"
+                  value={phone}
+                  onChange={setPhone}
+                  defaultCountry="US"
+                  international
+                  countryCallingCodeEditable={false}
+                  required
                   disabled={loading}
                   className="h-12"
                 />
