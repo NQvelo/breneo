@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import PhoneInput from 'react-phone-number-input';
+import type { Country } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, Building2 } from 'lucide-react';
@@ -31,6 +32,57 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
   const [academyStep, setAcademyStep] = useState<'name' | 'details'>('name');
   const navigate = useNavigate();
   const { signIn, signUp, signUpAcademy, resendConfirmation } = useAuth();
+
+  // Auto-detect country for phone input
+  const [defaultCountry, setDefaultCountry] = useState<Country>('US');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const setFromLocale = () => {
+      try {
+        const locale = navigator.language || (navigator as any).userLanguage || '';
+        const match = locale.match(/-([A-Z]{2})/i);
+        if (match && match[1]) {
+          setDefaultCountry(match[1].toUpperCase() as Country);
+        }
+      } catch {}
+    };
+
+    const detect = async () => {
+      if (!('geolocation' in navigator)) {
+        setFromLocale();
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const { latitude, longitude } = pos.coords;
+            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+            const data = await res.json();
+            const code = (data?.countryCode || '').toUpperCase();
+            if (!cancelled && code && code.length === 2) {
+              setDefaultCountry(code as Country);
+            } else {
+              setFromLocale();
+            }
+          } catch (e) {
+            setFromLocale();
+          }
+        },
+        () => {
+          setFromLocale();
+        },
+        { enableHighAccuracy: false, timeout: 5000 }
+      );
+    };
+
+    detect();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,7 +278,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                     placeholder="Enter your phone number"
                     value={phone}
                     onChange={setPhone}
-                    defaultCountry="US"
+                    defaultCountry={defaultCountry}
                     international
                     countryCallingCodeEditable={false}
                     required
