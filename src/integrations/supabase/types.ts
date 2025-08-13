@@ -267,6 +267,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_public_academy_profile: {
+        Args: { academy_name_param: string }
+        Returns: {
+          id: string
+          academy_name: string
+          description: string
+          website_url: string
+          is_verified: boolean
+          logo_url: string
+          created_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _user_id: string
