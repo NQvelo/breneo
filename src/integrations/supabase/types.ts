@@ -116,6 +116,13 @@ export type Database = {
             referencedRelation: "academy_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "courses_academy_id_fkey"
+            columns: ["academy_id"]
+            isOneToOne: false
+            referencedRelation: "public_academy_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       dynamic_skill_tests: {
@@ -264,7 +271,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_academy_profiles: {
+        Row: {
+          academy_name: string | null
+          contact_email_hidden: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_verified: boolean | null
+          logo_url: string | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          academy_name?: string | null
+          contact_email_hidden?: never
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          logo_url?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          academy_name?: string | null
+          contact_email_hidden?: never
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          logo_url?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_public_academy_profile: {
