@@ -99,3 +99,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Remove focus outline from react-phone-number-input inner input */
+.PhoneInputInput {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.PhoneInputInput:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
