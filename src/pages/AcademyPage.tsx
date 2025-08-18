@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ExternalLink, Mail, Globe } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Course {
   id: string;
@@ -28,32 +29,50 @@ interface AcademyProfile {
   academy_name: string;
   description: string;
   website_url: string;
-  contact_email: string;
+  contact_email?: string; // Optional for public view
   is_verified: boolean;
   logo_url?: string;
 }
 
 const AcademyPage = () => {
   const { academyName } = useParams<{ academyName: string }>();
+  const { user } = useAuth();
 
-  // Fetch academy profile
+  // Fetch academy profile - use secure view for unauthenticated users
   const { data: academyProfile, isLoading: profileLoading } = useQuery({
-    queryKey: ['academy-profile', academyName],
+    queryKey: ['academy-profile', academyName, user?.id],
     queryFn: async () => {
       if (!academyName) return null;
       
-      const { data, error } = await supabase
-        .from('academy_profiles')
-        .select('*')
-        .eq('academy_name', decodeURIComponent(academyName))
-        .single();
+      if (user) {
+        // Authenticated users can see full profile with contact info
+        const { data, error } = await supabase
+          .from('academy_profiles')
+          .select('*')
+          .eq('academy_name', decodeURIComponent(academyName))
+          .single();
 
-      if (error) {
-        console.error('Error fetching academy profile:', error);
-        return null;
+        if (error) {
+          console.error('Error fetching academy profile:', error);
+          return null;
+        }
+
+        return data as AcademyProfile;
+      } else {
+        // Unauthenticated users get limited profile without contact info
+        const { data, error } = await supabase
+          .from('public_academy_profiles')
+          .select('*')
+          .eq('academy_name', decodeURIComponent(academyName))
+          .single();
+
+        if (error) {
+          console.error('Error fetching public academy profile:', error);
+          return null;
+        }
+
+        return data as AcademyProfile;
       }
-
-      return data as AcademyProfile;
     },
     enabled: !!academyName
   });
