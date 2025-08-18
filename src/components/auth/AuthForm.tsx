@@ -34,7 +34,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
   const { signIn, signUp, signUpAcademy, resendConfirmation } = useAuth();
 
   // Auto-detect country for phone input
-  const [defaultCountry, setDefaultCountry] = useState<Country>('US');
+  const [defaultCountry, setDefaultCountry] = useState<Country>('GE');
 
   useEffect(() => {
     // Set country based on browser locale only (no location permission)
@@ -45,7 +45,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
         setDefaultCountry(match[1].toUpperCase() as Country);
       }
     } catch {
-      // Keep default 'US' if detection fails
+      // Keep default 'GE' if detection fails
     }
   }, []);
 
