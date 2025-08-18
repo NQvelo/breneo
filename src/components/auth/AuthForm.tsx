@@ -237,31 +237,17 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                 <label htmlFor="phone" className="text-sm font-medium text-foreground">
                   Phone Number
                 </label>
-                <div className="flex h-12 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                  <PhoneInput
-                    id="phone"
-                    placeholder="Enter your phone number"
-                    value={phone}
-                    onChange={setPhone}
-                    defaultCountry={defaultCountry}
-                    international
-                    countryCallingCodeEditable={false}
-                    disabled={loading}
-                    className="flex w-full items-center gap-2"
-                    inputComponent={
-                      (React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => (
-                        <input
-                          {...props}
-                          ref={ref}
-                          className="flex-1 bg-transparent border-0 outline-none focus-visible:outline-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground"
-                        />
-                      )) as any)
-                    }
-                    countrySelectProps={{
-                      className: "bg-transparent border-0 outline-none text-foreground pr-2 focus:outline-none focus:ring-0",
-                    } as any}
-                  />
-                </div>
+                <PhoneInput
+                  id="phone"
+                  placeholder="Enter your phone number"
+                  value={phone}
+                  onChange={setPhone}
+                  defaultCountry={defaultCountry}
+                  international
+                  countryCallingCodeEditable={false}
+                  disabled={loading}
+                  className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
               </div>
               
               <div className="space-y-2">
