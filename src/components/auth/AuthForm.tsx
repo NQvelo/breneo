@@ -37,51 +37,16 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
   const [defaultCountry, setDefaultCountry] = useState<Country>('US');
 
   useEffect(() => {
-    let cancelled = false;
-
-    const setFromLocale = () => {
-      try {
-        const locale = navigator.language || (navigator as any).userLanguage || '';
-        const match = locale.match(/-([A-Z]{2})/i);
-        if (match && match[1]) {
-          setDefaultCountry(match[1].toUpperCase() as Country);
-        }
-      } catch {}
-    };
-
-    const detect = async () => {
-      if (!('geolocation' in navigator)) {
-        setFromLocale();
-        return;
+    // Set country based on browser locale only (no location permission)
+    try {
+      const locale = navigator.language || (navigator as any).userLanguage || '';
+      const match = locale.match(/-([A-Z]{2})/i);
+      if (match && match[1]) {
+        setDefaultCountry(match[1].toUpperCase() as Country);
       }
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          try {
-            const { latitude, longitude } = pos.coords;
-            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
-            const data = await res.json();
-            const code = (data?.countryCode || '').toUpperCase();
-            if (!cancelled && code && code.length === 2) {
-              setDefaultCountry(code as Country);
-            } else {
-              setFromLocale();
-            }
-          } catch (e) {
-            setFromLocale();
-          }
-        },
-        () => {
-          setFromLocale();
-        },
-        { enableHighAccuracy: false, timeout: 5000 }
-      );
-    };
-
-    detect();
-
-    return () => {
-      cancelled = true;
-    };
+    } catch {
+      // Keep default 'US' if detection fails
+    }
   }, []);
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -272,32 +237,17 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                 <label htmlFor="phone" className="text-sm font-medium text-foreground">
                   Phone Number
                 </label>
-                <div className="flex h-12 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-                  <PhoneInput
-                    id="phone"
-                    placeholder="Enter your phone number"
-                    value={phone}
-                    onChange={setPhone}
-                    defaultCountry={defaultCountry}
-                    international
-                    countryCallingCodeEditable={false}
-                    required
-                    disabled={loading}
-                    className="flex w-full items-center gap-2"
-                    inputComponent={
-                      (React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => (
-                        <input
-                          {...props}
-                          ref={ref}
-                          className="flex-1 bg-transparent border-0 outline-none focus-visible:outline-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground"
-                        />
-                      )) as any)
-                    }
-                    countrySelectProps={{
-                      className: "bg-transparent border-0 outline-none text-foreground pr-2",
-                    } as any}
-                  />
-                </div>
+                <PhoneInput
+                  id="phone"
+                  placeholder="Enter your phone number"
+                  value={phone}
+                  onChange={setPhone}
+                  defaultCountry={defaultCountry}
+                  international
+                  countryCallingCodeEditable={false}
+                  disabled={loading}
+                  className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
               </div>
               
               <div className="space-y-2">
