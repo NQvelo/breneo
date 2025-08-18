@@ -237,7 +237,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                 <label htmlFor="phone" className="text-sm font-medium text-foreground">
                   Phone Number
                 </label>
-                <div className="relative">
+                <div className="flex h-12 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                   <PhoneInput
                     id="phone"
                     placeholder="Enter your phone number"
@@ -247,10 +247,19 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                     international
                     countryCallingCodeEditable={false}
                     disabled={loading}
-                    style={{
-                      height: '48px'
-                    }}
-                    className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex w-full items-center gap-2"
+                    inputComponent={
+                      (React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => (
+                        <input
+                          {...props}
+                          ref={ref}
+                          className="flex-1 bg-transparent border-0 outline-none focus-visible:outline-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground"
+                        />
+                      )) as any)
+                    }
+                    countrySelectProps={{
+                      className: "bg-transparent border-0 outline-none text-foreground pr-2 focus:outline-none focus:ring-0",
+                    } as any}
                   />
                 </div>
               </div>
