@@ -56,9 +56,6 @@ const AuthPage = () => {
                           Join courses, learn new skills, and advance your career with our comprehensive learning platform
                         </p>
                       </div>
-                      <div className="flex-shrink-0">
-                        <div className="w-6 h-6 border-2 border-border rounded-full"></div>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -76,9 +73,6 @@ const AuthPage = () => {
                         <p className="text-sm text-muted-foreground">
                           Create and manage courses, track student progress, and build your educational platform
                         </p>
-                      </div>
-                      <div className="flex-shrink-0">
-                        <div className="w-6 h-6 border-2 border-border rounded-full"></div>
                       </div>
                     </div>
                   </CardContent>
