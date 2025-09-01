@@ -88,9 +88,10 @@ const AuthPage = () => {
               <div className="text-center mt-6">
                 <button
                   onClick={() => navigate('/auth/login')}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-sm transition-colors"
                 >
-                  Already have an account? Sign in
+                  <span className="text-muted-foreground">Already have an account? </span>
+                  <span className="text-primary hover:text-primary/80">Sign in</span>
                 </button>
               </div>
             </div>
