@@ -3,16 +3,21 @@ import { AuthForm } from '@/components/auth/AuthForm';
 import { Card, CardContent } from '@/components/ui/card';
 import { GraduationCap, Building2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
 const AuthPage = () => {
   const [selectedRole, setSelectedRole] = useState<'student' | 'academy' | null>(null);
   const navigate = useNavigate();
+
   const handleRoleSelection = (role: 'student' | 'academy') => {
     setSelectedRole(role);
   };
+
   const handleBack = () => {
     setSelectedRole(null);
   };
-  return <div className="min-h-screen bg-breneo-lightgray flex flex-col">
+
+  return (
+    <div className="min-h-screen bg-breneo-lightgray flex flex-col">
       {/* Simple header */}
       <header className="bg-white py-3 px-4 md:py-4 md:px-6 shadow-sm">
         <div className="container mx-auto">
@@ -25,7 +30,8 @@ const AuthPage = () => {
       {/* Main content */}
       <main className="flex-grow flex items-center justify-center py-6 px-3 md:py-12 md:px-4">
         <div className="w-full max-w-md">
-          {!selectedRole ? <div className="space-y-6">
+          {!selectedRole ? (
+            <div className="space-y-6">
               <div className="text-center mb-8">
                 <h1 className="text-3xl font-semibold text-foreground mb-2">
                   Welcome to Breneo
@@ -78,14 +84,26 @@ const AuthPage = () => {
                   </CardContent>
                 </Card>
               </div>
-            </div> : <div>
+
+              <div className="text-center mt-6">
+                <button
+                  onClick={() => navigate('/auth/login')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Already have an account? Sign in
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
               <div className="mb-4">
                 <button onClick={handleBack} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   ← Back to role selection
                 </button>
               </div>
               <AuthForm initialRole={selectedRole} initialIsSignUp={true} onRequestSignIn={() => navigate('/auth/login')} />
-            </div>}
+            </div>
+          )}
         </div>
       </main>
 
@@ -97,6 +115,8 @@ const AuthPage = () => {
           </p>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 };
+
 export default AuthPage;
