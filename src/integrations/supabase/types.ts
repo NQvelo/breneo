@@ -199,6 +199,7 @@ export type Database = {
           id: string
           interests: string[] | null
           onboarding_completed: boolean | null
+          profile_photo_url: string | null
           updated_at: string | null
         }
         Insert: {
@@ -208,6 +209,7 @@ export type Database = {
           id: string
           interests?: string[] | null
           onboarding_completed?: boolean | null
+          profile_photo_url?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -217,6 +219,7 @@ export type Database = {
           id?: string
           interests?: string[] | null
           onboarding_completed?: boolean | null
+          profile_photo_url?: string | null
           updated_at?: string | null
         }
         Relationships: []

@@ -1,25 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { TestResults } from '@/components/skills/TestResults';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { User } from 'lucide-react';
+import { User, Camera, Upload } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Profile form state
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState('');
 
   // Password form state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -27,36 +31,132 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
-    if (user) {
-      setFullName(user.user_metadata?.full_name || '');
-      setEmail(user.email || '');
-    }
+    const fetchProfile = async () => {
+      if (user) {
+        // Set basic info from auth
+        setFullName(user.user_metadata?.full_name || '');
+        setEmail(user.email || '');
+
+        // Fetch additional profile data from profiles table
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('profile_photo_url')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+        } else if (profile) {
+          setProfilePhotoUrl(profile.profile_photo_url || '');
+        }
+      }
+    };
+
+    fetchProfile();
   }, [user]);
+
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Error",
+        description: "Please select an image file",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Error", 
+        description: "Image size must be less than 5MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setUploadingPhoto(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/avatar.${fileExt}`;
+
+      // Upload image to storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Update profile in database
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .upsert({ 
+          id: user.id,
+          email: user.email,
+          full_name: fullName,
+          profile_photo_url: publicUrl 
+        });
+
+      if (updateError) throw updateError;
+
+      setProfilePhotoUrl(publicUrl);
+      toast({
+        title: "Success",
+        description: "Profile photo updated successfully"
+      });
+
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.updateUser({
+      // Update auth user data
+      const { error: authError } = await supabase.auth.updateUser({
         email: email,
         data: {
           full_name: fullName
         }
       });
 
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
+      if (authError) throw authError;
+
+      // Update profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({ 
+          id: user?.id!,
+          email: email,
+          full_name: fullName,
+          profile_photo_url: profilePhotoUrl
         });
-      } else {
-        toast({
-          title: "Success",
-          description: "Profile updated successfully"
-        });
-      }
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully"
+      });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -134,6 +234,55 @@ export default function ProfilePage() {
         <TestResults />
 
         <div className="grid gap-6 md:grid-cols-2">
+          {/* Profile Photo */}
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle>Profile Photo</CardTitle>
+              <CardDescription>
+                Upload a profile photo to personalize your account.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-6">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage src={profilePhotoUrl} alt="Profile photo" />
+                  <AvatarFallback className="bg-breneo-blue/10 text-breneo-blue text-lg">
+                    {fullName ? fullName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingPhoto}
+                      className="flex items-center space-x-2"
+                    >
+                      {uploadingPhoto ? (
+                        <Upload className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Camera className="h-4 w-4" />
+                      )}
+                      <span>{uploadingPhoto ? 'Uploading...' : 'Change Photo'}</span>
+                    </Button>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    JPG, PNG or GIF. Max size 5MB.
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Profile Information */}
           <Card>
             <CardHeader>
