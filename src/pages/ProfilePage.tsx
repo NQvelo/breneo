@@ -233,44 +233,33 @@ export default function ProfilePage() {
         {/* Test Results Section */}
         <TestResults />
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Profile Photo */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle>Profile Photo</CardTitle>
-              <CardDescription>
-                Upload a profile photo to personalize your account.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-6">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={profilePhotoUrl} alt="Profile photo" />
-                  <AvatarFallback className="bg-breneo-blue/10 text-breneo-blue text-lg">
-                    {fullName ? fullName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadingPhoto}
-                      className="flex items-center space-x-2"
-                    >
-                      {uploadingPhoto ? (
-                        <Upload className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Camera className="h-4 w-4" />
-                      )}
-                      <span>{uploadingPhoto ? 'Uploading...' : 'Change Photo'}</span>
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    JPG, PNG or GIF. Max size 5MB.
-                  </p>
+        <div className="space-y-6">
+          {/* Profile Photo and Info - Centered Design */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center space-y-4">
+                {/* Profile Photo with Edit Button */}
+                <div className="relative">
+                  <Avatar className="h-32 w-32">
+                    <AvatarImage src={profilePhotoUrl} alt="Profile photo" />
+                    <AvatarFallback className="bg-breneo-blue/10 text-breneo-blue text-2xl">
+                      {fullName ? fullName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  {/* Edit Button Overlay */}
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingPhoto}
+                    className="absolute bottom-1 right-1 bg-breneo-blue hover:bg-breneo-blue/90 text-white rounded-full p-2 shadow-lg transition-colors disabled:opacity-50"
+                  >
+                    {uploadingPhoto ? (
+                      <Upload className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Camera className="h-4 w-4" />
+                    )}
+                  </button>
+                  
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -279,29 +268,42 @@ export default function ProfilePage() {
                     className="hidden"
                   />
                 </div>
+                
+                {/* User Info - Centered */}
+                <div className="text-center space-y-2">
+                  <h2 className="text-2xl font-semibold text-gray-900">
+                    {fullName || 'User Name'}
+                  </h2>
+                  <p className="text-gray-500">
+                    {email}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
 
+        <div className="grid gap-6 md:grid-cols-2">
           {/* Profile Information */}
           <Card>
             <CardHeader>
               <CardTitle>Profile Information</CardTitle>
               <CardDescription>
-                Update your personal information and email address.
+                Update your personal information.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
+                  <Label htmlFor="username">Username</Label>
                   <Input
-                    id="fullName"
+                    id="username"
                     type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
+                    value={email.split('@')[0]}
+                    disabled
+                    className="bg-gray-50"
+                    placeholder="Username (auto-generated)"
                   />
+                  <p className="text-xs text-muted-foreground">Username is based on your email and cannot be changed</p>
                 </div>
                 
                 <div className="space-y-2">
@@ -310,8 +312,21 @@ export default function ProfilePage() {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
+                    disabled
+                    className="bg-gray-50"
+                    placeholder="Email address"
+                  />
+                  <p className="text-xs text-muted-foreground">Email cannot be changed from this page</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Enter your full name"
                   />
                 </div>
 
@@ -393,6 +408,7 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </DashboardLayout>
   );
