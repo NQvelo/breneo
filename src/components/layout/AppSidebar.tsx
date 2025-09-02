@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, BookOpen, User } from 'lucide-react';
+import { LayoutDashboard, Briefcase, BookOpen, User, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -50,6 +50,9 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
           <Link to="/" className="flex items-center">
             <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-8" />
           </Link>
+          <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+            <Bell size={20} />
+          </button>
         </div>
       </div>
 
