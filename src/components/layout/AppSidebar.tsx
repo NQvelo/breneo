@@ -48,7 +48,7 @@ export function AppSidebar({ collapsed, toggleSidebar }: AppSidebarProps) {
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 py-3">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
-            <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-8" />
+            <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-6" />
           </Link>
           <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <Bell size={20} />
