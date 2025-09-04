@@ -125,11 +125,20 @@ const CoursesPage = () => {
         </div>
         
         <Tabs defaultValue="all" value={currentTab} onValueChange={setCurrentTab} className="mb-8">
-          <TabsList>
-            <TabsTrigger value="all">All Courses ({coursesWithMatches.length})</TabsTrigger>
-            <TabsTrigger value="enrolled">My Courses</TabsTrigger>
-            <TabsTrigger value="recommended">
-              Recommended ({coursesWithMatches.filter(c => c.match > 70).length})
+          <TabsList className="grid w-full grid-cols-3 md:w-auto md:inline-flex">
+            <TabsTrigger value="all" className="text-xs md:text-sm">
+              <span className="hidden sm:inline">All Courses</span>
+              <span className="sm:hidden">All</span>
+              <span className="ml-1">({coursesWithMatches.length})</span>
+            </TabsTrigger>
+            <TabsTrigger value="enrolled" className="text-xs md:text-sm">
+              <span className="hidden sm:inline">My Courses</span>
+              <span className="sm:hidden">Mine</span>
+            </TabsTrigger>
+            <TabsTrigger value="recommended" className="text-xs md:text-sm">
+              <span className="hidden sm:inline">Recommended</span>
+              <span className="sm:hidden">Top</span>
+              <span className="ml-1">({coursesWithMatches.filter(c => c.match > 70).length})</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
