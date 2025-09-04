@@ -241,7 +241,11 @@ export default function ProfilePage() {
                 {/* Profile Photo with Edit Button */}
                 <div className="relative">
                   <Avatar className="h-32 w-32">
-                    <AvatarImage src={profilePhotoUrl} alt="Profile photo" />
+                    <AvatarImage 
+                      src={profilePhotoUrl} 
+                      alt="Profile photo"
+                      key={profilePhotoUrl} // Force re-render when URL changes
+                    />
                     <AvatarFallback className="bg-breneo-blue/10 text-breneo-blue text-2xl">
                       {fullName ? fullName.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
