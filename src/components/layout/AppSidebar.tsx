@@ -29,11 +29,14 @@ export function AppSidebar({
     label: 'Notifications',
     href: '/notifications'
   }];
-  const mobileNavItems = [...navItems, {
-    icon: User,
-    label: 'Profile',
-    href: '/profile'
-  }];
+  const mobileNavItems = [
+    ...navItems.filter(item => item.href !== '/notifications'),
+    {
+      icon: User,
+      label: 'Profile',
+      href: '/profile'
+    }
+  ];
 
   // Force rebuild to clear Settings reference cache
 
