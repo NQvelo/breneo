@@ -24,6 +24,10 @@ export function AppSidebar({
     icon: BookOpen,
     label: 'Courses',
     href: '/courses'
+  }, {
+    icon: Bell,
+    label: 'Notifications',
+    href: '/notifications'
   }];
   const mobileNavItems = [...navItems, {
     icon: User,
@@ -40,9 +44,9 @@ export function AppSidebar({
           <Link to="/" className="flex items-center">
             <img src="/lovable-uploads/a27089ec-2666-4c11-a0e0-0d8ea54e1d39.png" alt="Breneo Logo" className="h-7 " />
           </Link>
-          <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+          <Link to="/notifications" className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <Bell size={20} />
-          </button>
+          </Link>
         </div>
       </div>
 

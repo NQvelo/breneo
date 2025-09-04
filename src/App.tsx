@@ -14,6 +14,7 @@ import SkillTestPage from "./pages/SkillTestPage";
 import SkillPathPage from "./pages/SkillPathPage";
 import JobsPage from "./pages/JobsPage";
 import CoursesPage from "./pages/CoursesPage";
+import NotificationsPage from "./pages/NotificationsPage";
 import ProfilePage from "./pages/ProfilePage";
 import AcademyDashboard from "./pages/AcademyDashboard";
 import AcademyPage from "./pages/AcademyPage";
@@ -64,6 +65,11 @@ const App = () => (
             <Route path="/courses" element={
               <ProtectedRoute>
                 <CoursesPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/notifications" element={
+              <ProtectedRoute>
+                <NotificationsPage />
               </ProtectedRoute>
             } />
             <Route path="/profile" element={
