@@ -10,15 +10,14 @@ import { TestResults } from '@/components/skills/TestResults';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Camera, Upload, LogOut } from 'lucide-react';
+import { User, Camera, Upload } from 'lucide-react';
 
 export default function ProfilePage() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [logoutLoading, setLogoutLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Profile form state
@@ -223,21 +222,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = async () => {
-    setLogoutLoading(true);
-    try {
-      await signOut();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "Failed to logout. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setLogoutLoading(false);
-    }
-  };
-
   return (
     <DashboardLayout>
       <div className="container mx-auto py-6 space-y-6">
@@ -426,27 +410,6 @@ export default function ProfilePage() {
                 </span>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Logout Section */}
-        <Card className="border-red-200">
-          <CardHeader>
-            <CardTitle className="text-red-700">Logout</CardTitle>
-            <CardDescription>
-              Sign out of your account.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button 
-              onClick={handleLogout} 
-              disabled={logoutLoading}
-              variant="destructive"
-              className="w-full"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              {logoutLoading ? 'Signing out...' : 'Sign Out'}
-            </Button>
           </CardContent>
         </Card>
         </div>
