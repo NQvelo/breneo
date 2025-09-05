@@ -37,6 +37,7 @@ interface AcademyProfile {
   website_url: string;
   contact_email: string;
   is_verified: boolean;
+  logo_url: string | null;
 }
 
 const AcademyDashboard = () => {
@@ -219,9 +220,17 @@ const AcademyDashboard = () => {
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-breneo-blue rounded-lg flex items-center justify-center">
-                <GraduationCap className="w-8 h-8 text-white" />
-              </div>
+              {academyProfile.logo_url ? (
+                <img 
+                  src={academyProfile.logo_url} 
+                  alt={`${academyProfile.academy_name} logo`}
+                  className="w-16 h-16 rounded-lg object-cover"
+                />
+              ) : (
+                <div className="w-16 h-16 bg-breneo-blue rounded-lg flex items-center justify-center">
+                  <GraduationCap className="w-8 h-8 text-white" />
+                </div>
+              )}
               <div>
                 <h1 className="text-2xl font-bold text-foreground">{academyProfile.academy_name}</h1>
                 <p className="text-muted-foreground">{academyProfile.description}</p>
