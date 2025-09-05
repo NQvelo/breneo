@@ -12,7 +12,7 @@ export function AppSidebar({
   toggleSidebar
 }: AppSidebarProps) {
   const location = useLocation();
-  const navItems = [{
+  const allNavItems = [{
     icon: LayoutDashboard,
     label: 'Dashboard',
     href: '/dashboard'
@@ -29,6 +29,13 @@ export function AppSidebar({
     label: 'Notifications',
     href: '/notifications'
   }];
+
+  // Filter out Jobs and Courses on academy dashboard
+  const isAcademyDashboard = location.pathname === '/dashboard';
+  const navItems = isAcademyDashboard 
+    ? allNavItems.filter(item => item.href !== '/jobs' && item.href !== '/courses')
+    : allNavItems;
+
   const mobileNavItems = [
     ...navItems.filter(item => item.href !== '/notifications'),
     {
