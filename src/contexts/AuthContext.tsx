@@ -11,7 +11,6 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signUpAcademy: (email: string, password: string, academyData: any) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  resendConfirmation: (email: string) => Promise<{ error: any }>;
   resetPassword: (email: string) => Promise<{ error: any }>;
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -135,23 +134,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const resendConfirmation = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email,
-      });
-      if (error) {
-        toast({ title: 'Resend failed', description: error.message, variant: 'destructive' });
-        return { error };
-      }
-      toast({ title: 'Verification email resent', description: 'Please check your inbox.' });
-      return { error: null };
-    } catch (error: any) {
-      toast({ title: 'Resend failed', description: error.message, variant: 'destructive' });
-      return { error };
-    }
-  };
   
   const signUpAcademy = async (email: string, password: string, academyData: any) => {
     try {
@@ -271,7 +253,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signUpAcademy,
     signIn,
-    resendConfirmation,
     resetPassword,
     updatePassword,
     signOut

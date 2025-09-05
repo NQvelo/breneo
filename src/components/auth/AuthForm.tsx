@@ -23,7 +23,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
   const [phone, setPhone] = useState<string | undefined>('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [resending, setResending] = useState(false);
+  
   const [isSignUp, setIsSignUp] = useState(initialIsSignUp ?? false);
   const [isAcademySignUp, setIsAcademySignUp] = useState(initialRole === 'academy');
   const [academyName, setAcademyName] = useState('');
@@ -34,7 +34,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signUp, signUpAcademy, resendConfirmation, resetPassword } = useAuth();
+  const { signIn, signUp, signUpAcademy, resetPassword } = useAuth();
 
   // Auto-detect country for phone input
   const [defaultCountry, setDefaultCountry] = useState<Country>('GE');
@@ -108,12 +108,6 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
     setLoading(false);
   };
 
-  const handleResend = async () => {
-    if (!email) return;
-    setResending(true);
-    await resendConfirmation(email);
-    setResending(false);
-  };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,16 +205,6 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
             </button>
           </div>
 
-          <div className="text-center pt-2">
-            <button
-              type="button"
-              onClick={handleResend}
-              disabled={!email || resending}
-              className="text-sm text-breneo-blue hover:underline font-medium disabled:opacity-50"
-            >
-              {resending ? 'Resending...' : 'Resend verification email'}
-            </button>
-          </div>
         </form>
       ) : !isSignUp && isForgotPassword ? (
         <form onSubmit={handleForgotPassword} className="space-y-6">
