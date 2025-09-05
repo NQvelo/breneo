@@ -119,7 +119,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <Card className="shadow-lg border-0 bg-white">
+      <Card className="border-0 bg-white rounded-2xl">
         <CardContent className="p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-semibold text-foreground mb-2">
