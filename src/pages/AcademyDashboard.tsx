@@ -386,44 +386,52 @@ const AcademyDashboard = () => {
               courses.map((course) => (
                 <Card key={course.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4 md:p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="text-lg font-semibold">{course.title}</h3>
-                          <Badge variant="secondary">{course.level}</Badge>
-                          <Badge variant="outline">{course.category}</Badge>
+                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
+                          <h3 className="text-lg font-semibold truncate">{course.title}</h3>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant="secondary">{course.level}</Badge>
+                            <Badge variant="outline">{course.category}</Badge>
+                          </div>
                         </div>
-                        <p className="text-muted-foreground mb-3">{course.description}</p>
-                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                        <p className="text-muted-foreground mb-4 text-sm md:text-base">{course.description}</p>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-sm text-muted-foreground mb-3">
                           <div className="flex items-center">
-                            <Clock className="w-4 h-4 mr-1" />
-                            {course.duration}
+                            <Clock className="w-4 h-4 mr-2 shrink-0" />
+                            <span>{course.duration}</span>
                           </div>
                           <div className="flex items-center">
-                            <BookOpen className="w-4 h-4 mr-1" />
-                            {course.topics.length} topics
+                            <BookOpen className="w-4 h-4 mr-2 shrink-0" />
+                            <span>{course.topics.length} topics</span>
                           </div>
                         </div>
                         {course.required_skills.length > 0 && (
-                          <div className="mt-3">
-                            <span className="text-sm font-medium">Required Skills: </span>
-                            <span className="text-sm text-muted-foreground">
-                              {course.required_skills.join(', ')}
-                            </span>
+                          <div className="space-y-1">
+                            <span className="text-sm font-medium">Required Skills:</span>
+                            <div className="flex flex-wrap gap-1">
+                              {course.required_skills.map((skill, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {skill}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
-                      <div className="flex items-center space-x-2 ml-4">
-                        <Button variant="outline" size="sm">
-                          <Edit className="w-4 h-4" />
+                      <div className="flex items-center gap-2 lg:flex-col lg:gap-2 shrink-0">
+                        <Button variant="outline" size="sm" className="flex-1 lg:flex-none">
+                          <Edit className="w-4 h-4 mr-2 lg:mr-0" />
+                          <span className="lg:hidden">Edit</span>
                         </Button>
                         <Button 
                           variant="outline" 
                           size="sm"
                           onClick={() => handleDeleteCourse(course.id)}
-                          className="text-red-600 hover:text-red-700"
+                          className="text-red-600 hover:text-red-700 flex-1 lg:flex-none"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4 mr-2 lg:mr-0" />
+                          <span className="lg:hidden">Delete</span>
                         </Button>
                       </div>
                     </div>
