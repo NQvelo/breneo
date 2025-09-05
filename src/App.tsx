@@ -22,6 +22,8 @@ import NotFound from "./pages/NotFound";
 import EmailConfirmed from "./pages/EmailConfirmed";
 import LoginPage from "./pages/LoginPage";
 
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -36,6 +38,7 @@ const App = () => (
             <Route path="/auth/login" element={<LoginPage />} />
             <Route path="/auth/signup" element={<AuthPage />} />
             <Route path="/auth" element={<Navigate to="/auth/login" replace />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/email-confirmed" element={<EmailConfirmed />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>

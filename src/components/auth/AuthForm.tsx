@@ -30,8 +30,10 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [academyStep, setAcademyStep] = useState<'name' | 'details'>('name');
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signUp, signUpAcademy, resendConfirmation } = useAuth();
+  const { signIn, signUp, signUpAcademy, resendConfirmation, resetPassword } = useAuth();
 
   // Auto-detect country for phone input
   const [defaultCountry, setDefaultCountry] = useState<Country>('GE');
@@ -112,18 +114,28 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
     setResending(false);
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setForgotPasswordLoading(true);
+    await resetPassword(email);
+    setForgotPasswordLoading(false);
+  };
+
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-semibold text-foreground mb-2">
-          {isSignUp ? (isAcademySignUp ? 'Academy Registration' : 'Create Account') : 'Welcome Back'}
+          {isSignUp ? (isAcademySignUp ? 'Academy Registration' : 'Create Account') : 
+           isForgotPassword ? 'Forgot Password' : 'Welcome Back'}
         </h1>
         <p className="text-muted-foreground">
-          {isSignUp ? (isAcademySignUp ? 'Register your academy on Breneo' : 'Sign up for your Breneo account') : 'Sign in to your Breneo account'}
+          {isSignUp ? (isAcademySignUp ? 'Register your academy on Breneo' : 'Sign up for your Breneo account') : 
+           isForgotPassword ? 'Enter your email to receive a password recovery link' : 'Sign in to your Breneo account'}
         </p>
       </div>
 
-      {!isSignUp ? (
+      {!isSignUp && !isForgotPassword ? (
         <form onSubmit={handleSignIn} className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium text-foreground">
@@ -166,6 +178,16 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
               </button>
             </div>
           </div>
+
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={() => setIsForgotPassword(true)}
+              className="text-sm text-breneo-blue hover:underline font-medium"
+            >
+              Forgot password?
+            </button>
+          </div>
           
           <Button 
             type="submit" 
@@ -194,6 +216,42 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
               className="text-sm text-breneo-blue hover:underline font-medium disabled:opacity-50"
             >
               {resending ? 'Resending...' : 'Resend verification email'}
+            </button>
+          </div>
+        </form>
+      ) : !isSignUp && isForgotPassword ? (
+        <form onSubmit={handleForgotPassword} className="space-y-6">
+          <div className="space-y-2">
+            <label htmlFor="forgot-email" className="text-sm font-medium text-foreground">
+              Email Address
+            </label>
+            <Input 
+              id="forgot-email" 
+              type="email" 
+              placeholder="Enter your email address" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              required 
+              disabled={forgotPasswordLoading}
+              className="h-12"
+            />
+          </div>
+          
+          <Button 
+            type="submit" 
+            className="w-full h-12 bg-breneo-blue hover:bg-breneo-blue/90 text-white font-medium"
+            disabled={forgotPasswordLoading || !email}
+          >
+            {forgotPasswordLoading ? 'Sending...' : 'Send Recovery Link'}
+          </Button>
+
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setIsForgotPassword(false)}
+              className="text-sm text-breneo-blue hover:underline font-medium"
+            >
+              Back to sign in
             </button>
           </div>
         </form>

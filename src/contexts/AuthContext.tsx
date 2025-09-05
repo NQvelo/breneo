@@ -12,6 +12,8 @@ interface AuthContextType {
   signUpAcademy: (email: string, password: string, academyData: any) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   resendConfirmation: (email: string) => Promise<{ error: any }>;
+  resetPassword: (email: string) => Promise<{ error: any }>;
+  updatePassword: (newPassword: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -204,6 +206,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+    const resetPassword = async (email: string) => {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      
+      if (error) {
+        toast({
+          title: "Password recovery failed",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Recovery link sent",
+          description: "Please check your email for the password reset link."
+        });
+      }
+      
+      return { error };
+    };
+
+    const updatePassword = async (newPassword: string) => {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) {
+        toast({
+          title: "Password update failed",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Password updated",
+          description: "Your password has been successfully updated."
+        });
+      }
+      
+      return { error };
+    };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -228,6 +272,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUpAcademy,
     signIn,
     resendConfirmation,
+    resetPassword,
+    updatePassword,
     signOut
   };
 
