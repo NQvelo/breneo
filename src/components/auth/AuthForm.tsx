@@ -146,7 +146,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
               onChange={e => setEmail(e.target.value)} 
               required 
               disabled={loading}
-              className="h-12"
+              className="h-12 rounded-[14px]"
             />
           </div>
           
@@ -163,7 +163,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                 onChange={e => setPassword(e.target.value)} 
                 required 
                 disabled={loading}
-                className="h-12 pr-10"
+                className="h-12 pr-10 rounded-[14px]"
               />
               <button
                 type="button"
@@ -220,7 +220,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
               onChange={e => setEmail(e.target.value)} 
               required 
               disabled={forgotPasswordLoading}
-              className="h-12"
+              className="h-12 rounded-[14px]"
             />
           </div>
           
@@ -258,7 +258,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                   onChange={e => setName(e.target.value)} 
                   required 
                   disabled={loading}
-                  className="h-12"
+                  className="h-12 rounded-[14px]"
                 />
               </div>
               
@@ -274,7 +274,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                   onChange={e => setEmail(e.target.value)} 
                   required 
                   disabled={loading}
-                  className="h-12"
+                  className="h-12 rounded-[14px]"
                 />
               </div>
 
@@ -291,7 +291,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                   international
                   countryCallingCodeEditable={false}
                   disabled={loading}
-                  className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 w-full rounded-[14px] border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
               
@@ -309,7 +309,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                     required 
                     minLength={6}
                     disabled={loading}
-                    className="h-12 pr-10"
+                    className="h-12 pr-10 rounded-[14px]"
                   />
                   <button
                     type="button"
@@ -381,7 +381,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                         onChange={e => setAcademyName(e.target.value)} 
                         required 
                         disabled={loading}
-                        className="h-12"
+                        className="h-12 rounded-[14px]"
                       />
                     </div>
                   </div>
@@ -440,7 +440,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                       onChange={e => setEmail(e.target.value)} 
                       required 
                       disabled={loading}
-                      className="h-12"
+                      className="h-12 rounded-[14px]"
                     />
                   </div>
 
@@ -455,7 +455,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                       value={academyDescription} 
                       onChange={e => setAcademyDescription(e.target.value)} 
                       disabled={loading}
-                      className="h-12"
+                      className="h-12 rounded-[14px]"
                     />
                   </div>
 
@@ -470,7 +470,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                       value={websiteUrl} 
                       onChange={e => setWebsiteUrl(e.target.value)} 
                       disabled={loading}
-                      className="h-12"
+                      className="h-12 rounded-[14px]"
                     />
                   </div>
                   
@@ -488,7 +488,7 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
                         required 
                         minLength={6}
                         disabled={loading}
-                        className="h-12 pr-10"
+                        className="h-12 pr-10 rounded-[14px]"
                       />
                       <button
                         type="button"
