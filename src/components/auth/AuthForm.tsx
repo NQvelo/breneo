@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import PhoneInput from 'react-phone-number-input';
 import type { Country } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
@@ -124,16 +125,18 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-semibold text-foreground mb-2">
-          {isSignUp ? (isAcademySignUp ? 'Academy Registration' : 'Create Account') : 
-           isForgotPassword ? 'Forgot Password' : 'Welcome Back'}
-        </h1>
-        <p className="text-muted-foreground">
-          {isSignUp ? (isAcademySignUp ? 'Register your academy on Breneo' : 'Sign up for your Breneo account') : 
-           isForgotPassword ? 'Enter your email to receive a password recovery link' : 'Sign in to your Breneo account'}
-        </p>
-      </div>
+      <Card className="shadow-lg border-0 bg-white">
+        <CardContent className="p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-semibold text-foreground mb-2">
+              {isSignUp ? (isAcademySignUp ? 'Academy Registration' : 'Create Account') : 
+               isForgotPassword ? 'Forgot Password' : 'Welcome Back'}
+            </h1>
+            <p className="text-muted-foreground">
+              {isSignUp ? (isAcademySignUp ? 'Register your academy on Breneo' : 'Sign up for your Breneo account') : 
+               isForgotPassword ? 'Enter your email to receive a password recovery link' : 'Sign in to your Breneo account'}
+            </p>
+          </div>
 
       {!isSignUp && !isForgotPassword ? (
         <form onSubmit={handleSignIn} className="space-y-6">
@@ -549,6 +552,8 @@ export function AuthForm({ initialRole, initialIsSignUp, onRequestSignUp, onRequ
           )}
         </div>
       )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
