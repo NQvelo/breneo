@@ -34,7 +34,7 @@ const AuthPage = () => {
               </div>
 
               <div className="space-y-4">
-                <Card className="cursor-pointer transition-shadow border-2 hover:border-primary/20 rounded-2xl" onClick={() => handleRoleSelection('student')}>
+                <Card className="cursor-pointer transition-shadow hover:border-2 hover:border-[#59caff] rounded-2xl" onClick={() => handleRoleSelection('student')}>
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
@@ -52,7 +52,7 @@ const AuthPage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="cursor-pointer transition-shadow border-2 hover:border-primary/20 rounded-2xl" onClick={() => handleRoleSelection('academy')}>
+                <Card className="cursor-pointer transition-shadow hover:border-2 hover:border-[#59caff] rounded-2xl" onClick={() => handleRoleSelection('academy')}>
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
                       <div className="flex-shrink-0">
