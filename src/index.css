@@ -96,7 +96,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-geo;
+    @apply bg-background text-foreground;
   }
 }
 
